@@ -14,7 +14,11 @@ export const socialProfiles = [
     href: "https://www.instagram.com/voom.oficial/",
     icon: faInstagram,
   },
-  { name: "TikTok", href: "#", icon: faTiktok },
+  {
+    name: "TikTok",
+    href: "https://www.tiktok.com/@voom.oficial",
+    icon: faTiktok,
+  },
   { name: "X", href: "#", icon: faXTwitter },
   {
     name: "Facebook",
