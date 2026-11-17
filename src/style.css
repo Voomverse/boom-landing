@@ -1198,7 +1198,7 @@ dialog .button {
 
 /* Public information stays readable in the initial HTML, including without JS. */
 .site-information {
-  padding-block: 0 40px;
+  padding-block: 0 20px;
 }
 .information-copy {
   max-width: 850px;
@@ -1267,7 +1267,7 @@ dialog .button {
 }
 @media (max-width: 799px) {
   .site-information {
-    padding-block: 0 12px;
+    padding-block: 0 6px;
   }
   .information-copy {
     font-size: 18px;
@@ -1315,7 +1315,7 @@ dialog .button {
 
 /* Sobre nosotros: layout and typography from the supplied reference. */
 .about-section {
-  padding: 100px 0 116px;
+  padding: 50px 0 58px;
   scroll-margin-top: 0;
 }
 .about-shell,
@@ -1481,7 +1481,7 @@ dialog .button {
 }
 @media (max-width: 799px) {
   .about-section {
-    padding: 48px 0 64px;
+    padding: 24px 0 32px;
   }
   .about-eyebrow {
     font-size: 12px;
@@ -1546,7 +1546,7 @@ dialog .button {
 
 /* Cómo funciona VEN: the three steps from the supplied reference. */
 .how-section {
-  padding: 100px 0 166px;
+  padding: 50px 0 83px;
   scroll-margin-top: 0;
 }
 .how-eyebrow {
@@ -1715,7 +1715,7 @@ dialog .button {
 }
 @media (max-width: 799px) {
   .how-section {
-    padding: 48px 0 64px;
+    padding: 24px 0 32px;
   }
   .how-eyebrow {
     margin-bottom: 20px;
