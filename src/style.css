@@ -148,6 +148,17 @@ main:focus {
   max-width: none;
   height: 300px;
   z-index: -1;
+  --planet-fade: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 15%,
+    #000 58%,
+    #000c 72%,
+    #0004 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: var(--planet-fade);
+  mask-image: var(--planet-fade);
 }
 .planet img {
   width: 100%;
