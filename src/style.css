@@ -415,9 +415,18 @@ main:focus {
   gap: 28px;
 }
 .benefits h2 {
-  font-size: 42px;
-  line-height: 1.13;
-  margin-top: 18px;
+  font-size: 56px;
+  line-height: 1.1;
+  margin: 0 0 24px;
+}
+.benefits .benefits-tagline {
+  font-size: 24px;
+  line-height: 1.05;
+  letter-spacing: .3em;
+  max-width: 340px;
+}
+.two-year-total {
+  color: var(--pink);
 }
 .benefit-grid {
   display: grid;
@@ -440,6 +449,7 @@ main:focus {
   margin-top: 70px;
 }
 .pricing-intro {
+  color: #00ee00;
   font-size: 26px;
   margin-bottom: 32px;
 }
@@ -574,8 +584,8 @@ main:focus {
   margin-top: 64px;
 }
 .choose h2 {
-  font-size: 42px;
-  line-height: 1.15;
+  font-size: 22px;
+  line-height: 1.3;
   margin-bottom: 16px;
 }
 .choose .muted {
@@ -688,10 +698,10 @@ dialog .button {
     width: 180px;
   }
   .benefits h2 {
-    font-size: 34px;
+    font-size: 48px;
   }
-  .choose h2 {
-    font-size: 34px;
+  .benefits .benefits-tagline {
+    font-size: 19px;
   }
   .special li {
     font-size: 13px;
@@ -951,13 +961,17 @@ dialog .button {
   .benefits {
     display: block;
   }
-  .benefits .eyebrow {
-    font-size: 12px;
-  }
   .benefits h2 {
-    font-size: 29px;
-    line-height: 1.13;
-    margin: 16px 0 20px;
+    font-size: 40px;
+    line-height: 1.1;
+    margin: 0 0 16px;
+  }
+  .benefits .benefits-tagline {
+    font-size: 17px;
+    line-height: 1.2;
+    letter-spacing: .25em;
+    margin-bottom: 24px;
+    max-width: 300px;
   }
   .benefit-grid {
     display: block;
@@ -1057,7 +1071,7 @@ dialog .button {
     margin-top: 42px;
   }
   .choose h2 {
-    font-size: 29px;
+    font-size: 22px;
     margin-bottom: 14px;
   }
   .choose .muted {
@@ -1111,11 +1125,6 @@ dialog .button {
   }
   .offer-hero h1 > span {
     display: block;
-  }
-  .benefits h2,
-  .choose h2 {
-    font-size: 50px;
-    line-height: 1.05;
   }
 }
 @media (max-width: 799px) {

@@ -14,6 +14,12 @@ The landing follows the supplied VEN reference: black canvas, magenta accents, l
 
 The privacy page describes VEN's actual signup fields and storage instead of the First Look account/talent platform. Optional closing dates are omitted until configured. Native control rendering and fallback geometric heading shapes can differ slightly from the supplied visual reference.
 
+## QUANTA screenshot update
+
+Applied the revised benefit copy, white QUANTA heading with magenta spaced subtitle, green limited-time message, magenta two-year total figure, and smaller plan-choice heading from the supplied annotations. The annotation instructions themselves are excluded from the rendered page.
+
+Production build and all 27 browser checks pass. Reviewed updated desktop and mobile offer captures; the changes preserve the signup and plan-selection interactions and fit the tested 320, 390, and 1440 px widths.
+
 ## Limits
 
 A passing local check is not evidence of a successful production deployment, private Blob connection, DNS setup, or email delivery. Those require separate production verification.

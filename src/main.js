@@ -172,16 +172,16 @@ function offer(receipt) {
   main.innerHTML = `<div class="offer shell">
     <p class="success-banner"><span class="success-icon"><i data-lucide="check"></i></span>Hecho. Ya estás en VEN.</p>
     <section class="offer-hero">${art("door")}<h1 class="display">Y AHORA,<b class="desktop-only"> LO QUE</b><span><b class="mobile-only">LO QUE </b>VINISTE<br class="mobile-break"> A BUSCAR.</span></h1></section>
-    <section class="benefits" aria-labelledby="benefits-title"><div><p class="eyebrow">QUANTA</p><h2 class="display" id="benefits-title">EL CÍRCULO MÁS CERCANO A LAS CELEBRITIES</h2></div>
+    <section class="benefits" aria-labelledby="benefits-title"><div><h2 class="display" id="benefits-title">QUANTA</h2><p class="eyebrow benefits-tagline">EL CÍRCULO MÁS CERCANO A LAS CELEBRITIES</p></div>
     <ul class="benefit-grid">
-      <li class="panel"><i data-lucide="moon"></i><p>Noches privadas con celebrities, cara a cara.</p></li>
-      <li class="panel"><i data-lucide="star"></i><p>El mejor sitio en sus shows y eventos.</p></li>
-      <li class="panel"><i data-lucide="key-round"></i><p>El Secreto completo de cada celebrity.</p></li>
-      <li class="panel"><i data-lucide="ticket"></i><p>Los sorteos de Golden Ticket, para vivir a su lado un sueño de su lista.</p></li>
+      <li class="panel"><i data-lucide="moon"></i><p>Vive experiencias con celebrities, cara a cara.</p></li>
+      <li class="panel"><i data-lucide="star"></i><p>Obtén el mejor sitio en sus shows y eventos.</p></li>
+      <li class="panel"><i data-lucide="key-round"></i><p>Descubre El Secreto valioso de cada celebrity.</p></li>
+      <li class="panel"><i data-lucide="ticket"></i><p>Participa en sorteos de experiencias y apariciones en series verticales con ellos.</p></li>
     </ul></section>
-    <section class="pricing" aria-label="Suscripción Superhuman"><p class="pricing-intro">Superhuman, la suscripción que abre todo VOOM, en tres tamaños.</p>
+    <section class="pricing" aria-label="Planes de VOOM"><p class="pricing-intro">APROVECHA. Una oportunidad por tiempo limitado.</p>
       <div class="price-grid">
-        <article class="price-card panel"><h3 class="eyebrow">MES A MES</h3><p class="price">16,99 € <small>al mes</small></p><p class="muted">Son 407,76 € en dos años.</p></article>
+        <article class="price-card panel"><h3 class="eyebrow">MES A MES</h3><p class="price">16,99 € <small>al mes</small></p><p class="muted">Son <span class="two-year-total">407,76</span> € en dos años.</p></article>
         <article class="price-card panel"><h3 class="eyebrow">ANUAL</h3><p class="price">186,89 €</p><p class="muted">Por un año.</p></article>
         <article class="price-card special panel"><h3 class="badge eyebrow">OFERTA VEN</h3><p class="price">186,89 €</p><p class="duration">por dos años</p>
           <ul><li><i data-lucide="check"></i>30 DANKEs</li><li><i data-lucide="check"></i>QUANTA desde el primer día</li></ul>
@@ -191,7 +191,7 @@ function offer(receipt) {
       </div>
       <aside class="dankes panel"><i data-lucide="asterisk"></i><p><strong>Los DANKEs son los «gracias» de VOOM.</strong> Con ellos participas en los sorteos de tickets, y cada ticket es tu lugar en una experiencia junto a una celebrity. Con ellos también reservas tus noches privadas.</p></aside>
     </section>
-    <section class="choose" aria-labelledby="choose-title"><div><h2 class="display" id="choose-title">¿CUÁL ELEGIRÍAS<br>CUANDO VOOM ABRA?</h2><p class="muted">Hoy no pagas nada: solo nos dices cuál.</p></div>
+    <section class="choose" aria-labelledby="choose-title"><div><h2 class="display" id="choose-title">¿CUÁL ELEGIRÍAS CUANDO VOOM ABRA?</h2><p class="muted">Hoy no pagas nada: solo nos dices cuál.</p></div>
       <div class="choices"><div class="choice-buttons"><button class="button outline" data-plan="monthly">MES A MES</button><button class="button outline" data-plan="annual">ANUAL</button><button class="button primary" data-plan="ven">OFERTA VEN</button></div><button class="text-button" data-plan="none">Todavía ninguno</button><p class="error" id="choice-error" role="alert" hidden></p></div>
     </section>
   </div>`;
