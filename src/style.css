@@ -130,6 +130,7 @@ main:focus {
 .ven-title img {
   width: 380px;
   max-width: 90%;
+  clip-path: inset(0 12% 0 0);
 }
 .intro .description {
   margin-top: 22px;

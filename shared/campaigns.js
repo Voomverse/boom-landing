@@ -2,8 +2,8 @@ export const variants = {
   ven: {
     label: "VEN",
     art: "planet",
-    title: "VEN.",
-    heading: "ENTRA ANTES DE QUE <span>VOOM ABRA.</span>",
+    title: "VEN",
+    heading: "ENTRA ANTES DE QUE <span>VOOM ABRA</span>",
     description:
       "Las fórmulas de vida de tus ídolos, y un lugar a su lado. Dinos de quién quieres aprender y te avisamos antes que nadie.",
     question: "¿De quién quieres aprender primero?",
