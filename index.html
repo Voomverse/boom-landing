@@ -4,24 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Las fórmulas de vida de tus ídolos, y un lugar a su lado. Entra en VEN antes de que VOOM abra."
-    />
-    <meta property="og:title" content="VEN · Entra antes de que VOOM abra" />
-    <meta
-      property="og:description"
-      content="Seguir es para seguidores. Evolucionar es para VOOMERS."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://voomverse.com/" />
-    <meta
-      property="og:image"
-      content="https://voomverse.com/assets/social.jpg"
-    />
-    <link rel="canonical" href="https://voomverse.com/" />
     <link rel="icon" type="image/webp" href="/assets/footer-mark.webp" />
-    <title>VEN · VOOM</title>
+    <link
+      rel="preload"
+      href="/node_modules/@fontsource/jost/files/jost-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-800-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <!--seo-head-->
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -36,11 +34,18 @@
       /></a>
       <span class="eyebrow" id="header-label">VEN</span>
     </header>
-    <main id="main" tabindex="-1"><div id="experience" tabindex="-1"></div></main>
+    <main id="main" tabindex="-1">
+      <div id="experience" tabindex="-1">
+        <!--entry-start--><!--app-entry--><!--entry-end-->
+      </div>
+      <!--site-info-->
+    </main>
     <footer class="site-footer">
       <div class="shell footer-inner">
         <p class="deadline eyebrow" hidden></p>
         <img
+          loading="lazy"
+          decoding="async"
           class="waves"
           src="/assets/waves.webp"
           alt=""
@@ -60,15 +65,23 @@
           </p>
         </div>
         <img
+          loading="lazy"
+          decoding="async"
           class="footer-mark"
           src="/assets/footer-mark.webp"
           width="54"
           height="60"
-          alt="VOOM"
+          alt=""
         />
       </div>
+      <!--footer-details-->
     </footer>
-    <noscript>Activa JavaScript para inscribirte en VEN.</noscript>
+    <noscript
+      ><p class="no-script shell">
+        Puedes leer toda la información de VOOM en esta página. Para enviar el
+        formulario de VEN necesitas activar JavaScript.
+      </p></noscript
+    >
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

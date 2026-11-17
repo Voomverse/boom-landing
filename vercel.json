@@ -5,19 +5,19 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/secreto",
-      "destination": "/index.html"
+      "source": "/secreto/",
+      "destination": "/secreto/index.html"
     },
     {
-      "source": "/antes-de-morir",
-      "destination": "/index.html"
+      "source": "/antes-de-morir/",
+      "destination": "/antes-de-morir/index.html"
     },
     {
-      "source": "/quanta",
-      "destination": "/index.html"
+      "source": "/quanta/",
+      "destination": "/quanta/index.html"
     },
     {
-      "source": "/privacidad",
+      "source": "/privacidad/",
       "destination": "/privacidad/index.html"
     }
   ],
@@ -42,6 +42,48 @@
           "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/secreto",
+      "destination": "/secreto/",
+      "permanent": true
+    },
+    {
+      "source": "/antes-de-morir",
+      "destination": "/antes-de-morir/",
+      "permanent": true
+    },
+    {
+      "source": "/quanta",
+      "destination": "/quanta/",
+      "permanent": true
+    },
+    {
+      "source": "/privacidad",
+      "destination": "/privacidad/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "boom-landing-ten.vercel.app"
+        }
+      ],
+      "destination": "https://www.voomverse.com/:path*",
+      "permanent": true
     }
   ]
 }
