@@ -1200,19 +1200,6 @@ dialog .button {
 .site-information {
   padding-block: 0 40px;
 }
-.information-section {
-  padding-block: 56px;
-  border-top: 1px solid var(--border);
-  scroll-margin-top: 28px;
-}
-.information-section > .eyebrow {
-  color: #e33ad1;
-  margin-bottom: 14px;
-}
-.information-section > h2 {
-  font-size: clamp(32px, 4vw, 48px);
-  margin-bottom: 28px;
-}
 .information-copy {
   max-width: 850px;
   font-size: 20px;
@@ -1240,32 +1227,6 @@ dialog .button {
 }
 .campaign-links a:hover {
   border-color: #e33ad1;
-}
-.faq-list {
-  max-width: 920px;
-}
-.faq-list details {
-  border-bottom: 1px solid #39333e;
-}
-.faq-list summary {
-  cursor: pointer;
-  padding: 22px 8px;
-  font-size: 21px;
-  font-weight: 500;
-  line-height: 1.4;
-}
-.faq-list details p {
-  padding: 0 8px 24px;
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1.65;
-}
-.faq-list a {
-  color: #ee62db;
-}
-summary:focus-visible {
-  outline: 2px solid #e342d7;
-  outline-offset: 4px;
 }
 .footer-details {
   width: min(1224px, 85%);
@@ -1308,17 +1269,8 @@ summary:focus-visible {
   .site-information {
     padding-block: 0 12px;
   }
-  .information-section {
-    padding-block: 36px;
-  }
   .information-copy {
     font-size: 18px;
-  }
-  .faq-list summary {
-    font-size: 18px;
-  }
-  .faq-list details p {
-    font-size: 17px;
   }
   .footer-details {
     width: auto;
