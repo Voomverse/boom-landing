@@ -2,6 +2,7 @@ import "./analytics.js";
 import "@fontsource/jost/latin-400.css";
 import "@fontsource/jost/latin-500.css";
 import "@fontsource/jost/latin-600.css";
+import "@fontsource/barlow-condensed/latin-600.css";
 import "@fontsource/barlow-condensed/latin-800.css";
 import "@fontsource/anton/latin-400.css";
 import {

@@ -1,17 +1,11 @@
 import { renderAbout } from "./about.js";
+import { renderHowItWorks } from "./how-it-works.js";
 import { renderSocials } from "./socials.js";
 export function renderInformation() {
   return `<div class="site-information">
     ${renderAbout()}
-    <div class="shell information-rest">
-    <section id="como-funciona" class="information-section" aria-labelledby="how-title">
-      <p class="eyebrow">TU PRIMER PASO</p><h2 class="display" id="how-title">CÓMO FUNCIONA VEN</h2>
-      <ol class="steps-grid">
-        <li class="panel"><h3>Cuéntanos quién te inspira</h3><p>Escribe el nombre de la celebrity que te interesa. No necesitas elegir un nombre de una lista ni tener una cuenta en VOOM.</p></li>
-        <li class="panel"><h3>Apúntate al aviso de apertura</h3><p>Deja tu email, confirma que tienes al menos 18 años y decide si quieres que VOOM te escriba. Puedes consultar la política de privacidad antes de enviar el formulario.</p></li>
-        <li class="panel"><h3>Elige si algún plan te interesa</h3><p>Después de inscribirte puedes indicar una preferencia de plan o elegir «Todavía ninguno». Hoy no pagas nada y no se realiza ningún cobro.</p></li>
-      </ol>
-    </section>
+    ${renderHowItWorks()}
+    <div class="shell">
     <section id="preguntas-frecuentes" class="information-section" aria-labelledby="faq-title">
       <p class="eyebrow">ANTES DE ENTRAR</p><h2 class="display" id="faq-title">PREGUNTAS FRECUENTES</h2>
       <div class="faq-list">
