@@ -45,4 +45,14 @@ The updated About section reproduces the supplied `Sobre nosotros.pdf` and links
 
 Local captures are temporary evidence and are not committed. No personal signup records or credentials are used in this report.
 
+## Hero transition and large-screen follow-up
+
+The planet artwork now fades into black at its edges through a static CSS mask. Its bright magenta crest is preserved. The desktop VEN hero fills at least the first viewport below the header, with its content vertically balanced in the available space. The mobile content flow is preserved.
+
+- Before/after visual evidence: `/tmp/voom-transition-qa/comparison-1440.png` and `/tmp/voom-transition-qa/comparison-390.png`.
+- Final first-screen captures: `/tmp/voom-transition-qa/final-screen-1920.png` and `final-screen-2560.png` in the same directory, captured at 1920 × 1080 and 2560 × 1440 CSS px, deviceScaleFactor 1.
+- Additional checked viewports: 1440 × 900, 3440 × 1440, 390 × 844 and 320 × 780.
+- The About section starts at or below the bottom of the initial desktop viewport in every checked desktop size. No horizontal overflow or browser/console errors were observed.
+- Production build, all 30 browser checks, all 21 accessibility scans, and all five initial-HTML crawl checks pass after these changes.
+
 final result: passed
