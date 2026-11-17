@@ -1,47 +1,52 @@
-# Cómo funciona VEN — visual and interaction validation
+# Preguntas frecuentes — visual and interaction validation
 
-The section follows the supplied `Cómo funciona VEN.pdf`: a magenta-and-white heading, three numbered cards, the optional third step, and a signup call to action.
+The FAQ section follows `Preguntas frecuentes.pdf`: a two-column introduction and five directly visible answers, with supplied blue icon badges and working contact/privacy links. The footer is preserved.
 
 ## Evidence and normalization
 
-- Source visual truth: `/tmp/voom-how-reference/reference.png`, normalized from the PDF's embedded 4320 × 2940 px image to 1440 × 980 px.
-- Implementation: `/tmp/voom-how-qa/final-1440.png`, captured in Chromium from the production build at a 1440 × 1100 CSS px viewport, deviceScaleFactor 1. Only the section is cropped. It measures 1440 × 980.39 CSS px; its capture is 1440 × 982 px because the page position and crop bounds are fractional. The two images retain the same content scale.
-- State: initial public landing, dark theme, local fonts and supplied icon artwork fully loaded.
-- Full-view evidence: `/tmp/voom-how-qa/comparison-final.png` places source and implementation together at the same scale.
-- Focused evidence: `/tmp/voom-how-qa/cards-final.png` compares the three source cards with the rendered cards, including text, numbers, icon badges and dividers.
-- Responsive captures: `/tmp/voom-how-qa/final-1024.png`, `final-800.png`, `final-390.png` and `final-320.png` in the same directory, all at deviceScaleFactor 1. The supplied reference is desktop-only.
+- Source visual truth: `/tmp/voom-faq-reference/reference.png`, normalized from the PDF's embedded 4320 × 3420 px image to 1440 × 1140 px.
+- Implementation: `/tmp/voom-faq-qa/final-1440.png`, captured from the production build in Chromium at a 1440 × 1200 CSS px viewport, deviceScaleFactor 1. The section measures 1440 × 1140 CSS px; the element screenshot includes one extra edge pixel because its page position is fractional. Both images retain the same content scale.
+- State: public initial landing, dark theme, fonts and all FAQ artwork loaded. All five answers are visible without interaction.
+- Full-view comparison: `/tmp/voom-faq-qa/comparison-final.png`, with source and implementation together at the same scale.
+- Focused comparison: `/tmp/voom-faq-qa/details-final.png`, with all five source questions/answers beside the rendered versions, including the legal email and privacy link.
+- Responsive captures: `/tmp/voom-faq-qa/final-1024.png`, `final-800.png`, `final-390.png` and `final-320.png` in the same directory. The supplied reference is desktop-only; all captures use deviceScaleFactor 1.
 
 ## Findings and comparison history
 
-1. **P2, resolved — display weight and optical alignment.** The first implementation used weight 800 for the step numbers, which made them heavier than the reference. The final implementation uses locally hosted Barlow Condensed 600 for the numbers. Heading, number and card-title alignment were corrected without changing the card grid. Evidence: `comparison-first.png` and `cards-first.png`, followed by the final comparisons above.
-2. **Resolved — call-to-action dimensions.** The first button's label was oversized, making the button wider than the source. Jost 18 px/600 restores the reference proportions. The eyebrow/headline and card-grid spacing were also adjusted against the source.
-3. **Final comparison: no actionable P0/P1/P2 findings.** Minor P3 font rasterization, icon-stroke and fractional-crop differences remain. They do not change the copy, desktop wrapping, card proportions or layout hierarchy.
+- The initial comparison matched the content, column positions, question sizes and row spacing. A P3 divider-color difference was corrected to the reference's darker neutral treatment. Evidence: `comparison-first.png` and `details-first.png`, followed by the final comparisons above.
+- The final comparison has no actionable P0/P1/P2 findings. Minor P3 browser text rasterization and fractional-pixel differences remain. These do not alter the desktop line breaks, content hierarchy or section proportions.
 
 ## Fidelity surfaces
 
-- **Fonts and typography:** Barlow Condensed 800 for the display heading, 600 for the step numbers, Jost 600 for card headings/button, and Arial for card descriptions/notes. Sizes, weights, tracking, line heights and desktop line breaks were checked in the full and focused comparisons.
-- **Spacing and layout:** 1280 px desktop content width, three 384 px cards, 24 px grid gaps and 32 px card padding. The title block, dividers and button follow the reference positions. Mobile uses a single column with natural text wrapping. No horizontal overflow at 1440, 1024, 800, 390 or 320 px.
-- **Colors and tokens:** existing black canvas, dark panels and borders, magenta heading/button, pink eyebrow/privacy link and blue icon accents. Existing brand tokens are preserved.
-- **Image quality and assets:** the three supplied icon badges are extracted at three-times display resolution and served locally as lossless WebP. Dimensions and aspect ratios are reserved. Check circles and the link arrow use standard Lucide icons.
-- **Copy and content:** the heading, subtitle, all three steps, optional badge, reassurance notes and button copy follow the PDF. The policy and signup links are functional.
+- **Fonts and typography:** local Barlow Condensed 800 for the display heading, Jost for the eyebrow/questions/introduction, and Arial 17 px for answers. Weights, tracking, line heights, bold lead-ins and desktop line breaks were checked in the full and focused comparisons.
+- **Spacing and layout:** 1280 px desktop content width, 480/732 px column proportions, a 68 px gap, 52 px icon badges and the reference's row rhythm. Tablet/mobile adapt to a stacked layout. Mobile answers span the available width for readability. No horizontal overflow at 1440, 1024, 800, 390 or 320 px.
+- **Colors and tokens:** black canvas, existing magenta heading, pink eyebrow/links, muted answer copy and subtle neutral dividers. Existing global brand tokens are preserved.
+- **Image quality:** all five icon badges come from the supplied artwork, extracted at three-times display resolution and served as local lossless WebP with reserved dimensions and lazy loading. No substitute illustrations are introduced.
+- **Copy and content:** all five questions, answer text, bold lead-ins, introduction and links follow the PDF. The answers remain in the initial HTML and are directly readable without JavaScript.
+
+## Footer preservation
+
+- The footer renderer, page footer markup and social-profile source are unchanged.
+- Runtime footer HTML is identical before/after at 1440, 1024, 800, 390 and 320 px.
+- Visible footer dimensions and relative element positions match the baseline. Style comparison normalizes resolved automatic margins and ignores coordinates of hidden zero-size nodes; the authored footer CSS is unchanged.
+- Visual evidence: `/tmp/voom-faq-qa/footer-comparison.png`, plus `footer-before-*` and `footer-final-*` captures in the same directory. The footer follows the updated section in normal page flow.
 
 ## Functional and accessibility checks
 
-- Production build passes.
-- All 30 existing browser checks pass, including signup validation, duplicate handling, plan selection and confirmation, using in-memory test storage.
-- All five public pages pass initial-HTML crawl checks. All 21 automated accessibility scans pass with zero reported violations.
-- The new CTA supports keyboard focus/activation on all four campaign pages, focuses the celebrity field, and preserves a name already entered.
-- For an existing signup, the CTA returns focus to the current offer rather than resetting the signup flow.
-- The new privacy link opens the policy page. Decorative artwork has empty alt text, decorative SVGs are hidden from assistive technology, and the ordered list has explicit list semantics.
-- No console errors or uncaught browser errors were observed in the focused interaction checks.
+- Production build and all 30 existing browser checks pass, using in-memory test storage.
+- All five public pages pass initial-HTML crawl checks. The four campaign pages expose all five FAQ answers without JavaScript.
+- All 21 automated accessibility scans pass with zero reported violations.
+- The legal email link has the correct mailto destination. Keyboard navigation reaches the privacy link, and activating it opens the policy page on all four campaign routes. No email is sent during verification.
+- Questions use H3 headings under the section H2. Decorative icon images have empty alt text. Existing page H1s are preserved.
+- No console errors or uncaught browser errors were observed in the focused checks.
 
 ## Implementation checklist
 
-- [x] Match the supplied section's copy, layout, typography, colors and icons.
-- [x] Compare the final desktop section and focused card regions against the PDF.
-- [x] Verify mobile and tablet wrapping without overflow.
-- [x] Verify CTA focus, privacy navigation and the existing signup flow.
-- [x] Preserve prerendered content and pass accessibility/crawl checks.
+- [x] Match the PDF's copy, layout, typography, colors and icons.
+- [x] Keep all five answers directly readable.
+- [x] Verify responsive layout, keyboard links and policy navigation.
+- [x] Verify footer markup, styling and visible layout remain unchanged.
+- [x] Pass production build, browser, accessibility and crawl checks.
 
 Temporary captures remain outside the repository. No credentials, personal signup records or private attachment identifiers are included here.
 
