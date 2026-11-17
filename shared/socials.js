@@ -22,7 +22,11 @@ export const socialProfiles = [
     href: "https://www.facebook.com/voom.oficial/",
     icon: faFacebookF,
   },
-  { name: "YouTube", href: "#", icon: faYoutube },
+  {
+    name: "YouTube",
+    href: "https://www.youtube.com/@voomverse",
+    icon: faYoutube,
+  },
 ];
 export function renderSocials() {
   return `<nav class="social-links" aria-label="Redes sociales"><p>Redes sociales${socialProfiles.every((profile) => profile.href === "#") ? " · Próximamente" : ""}</p><ul>${socialProfiles
