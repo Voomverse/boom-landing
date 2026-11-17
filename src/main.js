@@ -16,6 +16,7 @@ import {
 } from "lucide";
 import { variants, privacyUrl, closingDate, closingLabel } from "./config.js";
 import "./style.css";
+import "./faq.css";
 import { renderEntry, renderArt } from "../shared/render-entry.js";
 
 const main = document.querySelector("#experience");

@@ -71,6 +71,10 @@ try {
     }
     assert.equal(await page.locator("img:not([alt])").count(), 0);
     if (target.variant) {
+      const answers = page.locator("#preguntas-frecuentes .faq-answer");
+      assert.equal(await answers.count(), 5);
+      for (const answer of await answers.all())
+        assert.equal(await answer.isVisible(), true);
       assert.ok(
         (await page.locator("main").innerText()).split(/\s+/).length > 300,
       );
@@ -150,12 +154,20 @@ try {
     );
     await page.keyboard.press("Enter");
     assert.equal(await page.evaluate(() => document.activeElement?.id), "main");
-    const faq = page.locator(".faq-list summary").first();
-    await faq.focus();
-    await page.keyboard.press("Enter");
+    const faqEmail = page.locator(
+      '#preguntas-frecuentes a[href="mailto:legal@voomverse.com"]',
+    );
+    await faqEmail.focus();
     assert.equal(
-      await page.locator(".faq-list details").first().getAttribute("open"),
-      "",
+      await faqEmail.evaluate((el) => el.matches(":focus-visible")),
+      true,
+    );
+    await page.keyboard.press("Tab");
+    assert.equal(
+      await page.evaluate(() =>
+        document.activeElement.matches("#preguntas-frecuentes .privacy-link"),
+      ),
+      true,
     );
     await page.goto(base + "/#sobre-nosotros");
     await page.locator("#celebrity").waitFor();
