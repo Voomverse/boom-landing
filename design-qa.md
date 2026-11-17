@@ -50,4 +50,12 @@ The FAQ section follows `Preguntas frecuentes.pdf`: a two-column introduction an
 
 Temporary captures remain outside the repository. No credentials, personal signup records or private attachment identifiers are included here.
 
+## Section-spacing follow-up
+
+The later request to halve vertical gaps supersedes the PDF's outer section spacing. Content widths, typography, card spacing, hero height and footer remain unchanged.
+
+- Desktop top/bottom padding: About 50/58 px, How it works 50/83 px, FAQ 50/126 px. Each value is half its previous size.
+- Mobile top/bottom padding: 24/32 px for all three sections. The information wrapper's bottom padding is also halved to 20 px on desktop and 6 px on mobile.
+- The production build passes. Browser measurements at 1440, 2560, 390 and 320 px confirm the exact 50% reduction, unchanged hero height/footer markup and no horizontal overflow.
+
 final result: passed
