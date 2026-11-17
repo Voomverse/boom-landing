@@ -422,7 +422,7 @@ main:focus {
 .benefits .benefits-tagline {
   font-size: 24px;
   line-height: 1.05;
-  letter-spacing: .3em;
+  letter-spacing: 0.3em;
   max-width: 340px;
 }
 .two-year-total {
@@ -972,7 +972,7 @@ dialog .button {
   .benefits .benefits-tagline {
     font-size: 17px;
     line-height: 1.2;
-    letter-spacing: .25em;
+    letter-spacing: 0.25em;
     margin-bottom: 24px;
     max-width: 300px;
   }
@@ -1177,4 +1177,193 @@ dialog .button {
   .confirmation .description {
     font-size: 21px;
   }
+}
+
+/* Public information stays readable in the initial HTML, including without JS. */
+.site-information {
+  padding-block: 64px 40px;
+}
+.information-section {
+  padding-block: 56px;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 28px;
+}
+.information-section > .eyebrow {
+  color: #e33ad1;
+  margin-bottom: 14px;
+}
+.information-section > h2 {
+  font-size: clamp(32px, 4vw, 48px);
+  margin-bottom: 28px;
+}
+.information-copy {
+  max-width: 850px;
+  font-size: 20px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.information-copy p + p {
+  margin-top: 18px;
+}
+.campaign-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+.campaign-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #746879;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+}
+.campaign-links a:hover {
+  border-color: #e33ad1;
+}
+.steps-grid {
+  list-style: decimal;
+  padding-left: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.steps-grid li {
+  padding: 24px;
+}
+.steps-grid h3 {
+  font-size: 22px;
+  line-height: 1.25;
+  margin-bottom: 14px;
+}
+.steps-grid p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.faq-list {
+  max-width: 920px;
+}
+.faq-list details {
+  border-bottom: 1px solid #39333e;
+}
+.faq-list summary {
+  cursor: pointer;
+  padding: 22px 8px;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.faq-list details p {
+  padding: 0 8px 24px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.65;
+}
+.faq-list a {
+  color: #ee62db;
+}
+summary:focus-visible {
+  outline: 2px solid #e342d7;
+  outline-offset: 4px;
+}
+.footer-details {
+  width: min(1224px, 85%);
+  margin-inline: auto;
+  padding: 16px 0 34px;
+  color: #aaa6b2;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.footer-details nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 14px;
+}
+.footer-details nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.footer-details p + p {
+  margin-top: 6px;
+}
+.no-script {
+  border: 1px solid #e342d7;
+  padding: 20px;
+  line-height: 1.5;
+}
+.checkbox {
+  min-height: 28px;
+}
+.legal a {
+  display: inline-block;
+  padding-block: 4px;
+}
+.two-year-total {
+  color: #ee62db;
+}
+@media (max-width: 799px) {
+  .site-information {
+    padding-block: 28px 12px;
+  }
+  .information-section {
+    padding-block: 36px;
+  }
+  .information-copy {
+    font-size: 18px;
+  }
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .faq-list summary {
+    font-size: 18px;
+  }
+  .faq-list details p {
+    font-size: 17px;
+  }
+  .footer-details {
+    width: auto;
+    margin-inline: 24px;
+  }
+}
+.social-links {
+  margin-bottom: 24px;
+}
+.social-links > p {
+  width: 100%;
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+.social-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.social-links a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  color: #d5cfdc;
+  border: 1px solid #534b5a;
+  border-radius: 9px;
+}
+.social-links a[aria-disabled="true"] {
+  pointer-events: none;
+  cursor: default;
+}
+.social-links svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
 }

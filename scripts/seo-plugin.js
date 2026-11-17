@@ -1,5 +1,6 @@
 import { variants } from "../shared/campaigns.js";
 import { renderEntry } from "../shared/render-entry.js";
+import { renderInformation, footerDetails } from "../shared/site-content.js";
 import { pages, siteOrigin, metadata } from "../shared/seo.js";
 
 export function seoPlugin(env) {
@@ -28,8 +29,8 @@ export function seoPlugin(env) {
         return html
           .replace("<!--seo-head-->", head(page))
           .replace("<!--app-entry-->", page.variant ? entry(page) : "")
-          .replace("<!--site-info-->", "")
-          .replace("<!--footer-details-->", "© 2026 Voomverse, S.L.U.");
+          .replace("<!--site-info-->", renderInformation())
+          .replace("<!--footer-details-->", footerDetails());
       },
     },
     generateBundle(options, bundle) {
