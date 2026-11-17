@@ -1,45 +1,48 @@
-# Design and interaction validation
+# Sobre nosotros — reference validation
 
-The landing follows the supplied VEN reference: black canvas, magenta accents, local brand artwork, responsive signup forms, QUANTA pricing, and plan-intent confirmations.
+The updated About section reproduces the supplied `Sobre nosotros.pdf` and links its three cards to the existing campaign pages.
 
-## Verified surfaces
+## Evidence and normalization
 
-- Responsive layout and overflow at 1440, 390, and 320 CSS pixels.
-- Form validation, age and marketing-consent controls, failed-save handling, and confirmation states.
-- The actual signup handler with private in-memory storage in tests; no production personal data is used.
-- Local fonts, artwork and icons; no hotlinked brand assets.
-- The standalone VEN privacy page, consent/footer links, heading structure, and return navigation.
+- Source visual truth: `/tmp/voom-about-reference/reference.png`, normalized from the PDF's 4320 × 3900 px embedded image to 1440 × 1300 px.
+- Implementation: `/tmp/voom-about-qa/final-1440.png`, captured from the production build in Chromium at a 1440 × 1300 CSS px viewport, deviceScaleFactor 1. The section measures 1440 × 1299.78 CSS px and captures as 1440 × 1300 px.
+- State: initial public landing, dark theme, fonts and supplied artwork loaded; only the About section is cropped for comparison.
+- Full-view comparison: `/tmp/voom-about-qa/comparison-final.png` places source and implementation together at the same scale.
+- Focused comparison: `/tmp/voom-about-qa/cards-final.png` places the three source cards above the implemented cards, with their typography, icons, copy and links readable.
+- Responsive captures: `/tmp/voom-about-qa/final-1024.png`, `final-800.png`, `final-390.png` and `final-320.png` in the same directory. These use deviceScaleFactor 1; the PDF supplies only a desktop design.
 
-## Reference adaptations
+## Findings and comparison history
 
-The privacy page describes VEN's actual signup fields and storage instead of the First Look account/talent platform. Optional closing dates are omitted until configured. Native control rendering and fallback geometric heading shapes can differ slightly from the supplied visual reference.
+1. **P2, resolved — introduction wrapping and vertical rhythm.** The first capture used oversized introductory text, wrapping its first sentence and pushing the cards about 27 px below the source. Body text also occupied too much width. Font-size, line-height and desktop wrapping corrections removed the extra line. Evidence: `comparison.png` followed by `comparison-v2.png` in `/tmp/voom-about-qa/`.
+2. **P2, resolved — card typography.** The second comparison showed different optical sizes and a mismatched lead typeface. The final pass uses Jost at 21 px/600 for card leads, Barlow Condensed at 38 px/800 for card headings, and Arial at 17 px for descriptions. Introductory text is 29 px. The desktop line breaks now follow the reference. Evidence: `cards-v2.png` followed by `cards-final.png`.
+3. **Resolved — icon artwork.** The library key had a different tooth shape. The final implementation uses the actual three icon badges and decorative waves extracted from the supplied artwork, with their aspect ratios preserved. The link arrows use Lucide's standard icon.
+4. **Final comparison: no actionable P0/P1/P2 findings.** Minor P3 differences remain in browser text rasterization, heading baselines and letter widths compared with the flattened PDF. They do not change the desktop line breaks, card proportions or content hierarchy.
 
-## QUANTA screenshot update
+## Fidelity surfaces
 
-Applied the revised benefit copy, white QUANTA heading with magenta spaced subtitle, green limited-time message, magenta two-year total figure, and smaller plan-choice heading from the supplied annotations. The annotation instructions themselves are excluded from the rendered page.
+- **Fonts and typography:** locally hosted Jost and Barlow Condensed, plus Arial for explanatory copy. Sizes, weights, line heights, tracking and desktop line breaks were compared in both full-view and focused captures. Mobile text wraps naturally.
+- **Spacing and layout:** 1280 px desktop content width, two-column introduction, three 396 px cards, 24 px card gaps, 32 px padding, and the reference's section rhythm. Mobile switches to one column. No horizontal overflow at 1440, 1024, 800, 390 or 320 px.
+- **Colors and tokens:** black canvas, existing magenta display accent, pink eyebrows/links, muted copy, dark panel fill and borders. Blue badge artwork is reused from the reference.
+- **Image quality:** the supplied artwork is local WebP, with three-times-resolution icon badges, reserved dimensions and lazy loading. No replacement illustration or remote image dependency is introduced.
+- **Copy and content:** all introduction, card, link and company-note copy follows the PDF. Campaign destinations are `/secreto/`, `/antes-de-morir/` and `/quanta/`.
 
-Production build and all 27 browser checks pass. Reviewed updated desktop and mobile offer captures; the changes preserve the signup and plan-selection interactions and fit the tested 320, 390, and 1440 px widths.
+## Functional and accessibility checks
 
-## Signup uniqueness and approximate location
+- Production build passes.
+- All 30 existing browser checks pass, including signup, duplicate handling, plan selection and confirmation flows, using in-memory test storage.
+- All five public pages remain readable without JavaScript. The quality suite passes all 21 automated accessibility scans and its crawl, metadata and keyboard checks, with zero reported violations.
+- All three About links support keyboard activation, expose contextual accessible names, show focus and open the intended campaign form.
+- Decorative artwork uses empty alt text. The existing page H1 is preserved; the About heading hierarchy uses H2, H3 and H4.
+- No console errors or uncaught browser errors were observed in the final interaction pass.
 
-Server checks cover case/whitespace normalization, repeated submissions across campaigns, simultaneous submissions, compatibility with dated signup folders, and private country/region/city capture from Vercel headers. Existing records are preserved. The browser suite verifies duplicate submissions stay on the form and do not create another signup or issue a new receipt.
+## Implementation checklist
 
-Production build, 20 server tests, and 30 browser checks pass. Location and successful writes are tested with synthetic platform headers and private in-memory storage; no production credentials or personal records are used.
+- [x] Replace the About introduction and three cards.
+- [x] Preserve supplied copy, artwork, colors and layout.
+- [x] Verify the final desktop comparison and mobile/tablet layouts.
+- [x] Verify card destinations and existing landing flows.
+- [x] Preserve initial-HTML rendering and pass accessibility/crawl checks.
 
-## Search visibility, public information and accessibility
-
-Public campaign pages are prerendered with one descriptive H1, unique titles/descriptions, canonical URLs matching the primary domain, social previews, and factual Organization/WebSite/WebPage structured data. About, How it works and FAQ sections are readable without JavaScript. Robots, sitemap and optional public AI-discovery summaries are included.
-
-All five pages pass initial-HTML checks. The automated WCAG A/AA scans report zero violations in 21 page/state/viewport combinations, including validation errors and the offer at 320, 390 and 1440 px. Keyboard checks cover skip navigation and native FAQ disclosure. The 30 existing browser checks and 20 server tests pass.
-
-The live mobile Lighthouse run reported 100 in Performance, Accessibility, Best Practices and SEO, with a 1.4-second LCP and zero CLS. These are lab results at a point in time, not guaranteed rankings, field Core Web Vitals or a complete accessibility/legal certification. The social icons are intentionally marked as unavailable placeholders until real profile URLs are supplied.
-
-## Limits
-
-A passing local check is not evidence of a successful production deployment, private Blob connection, DNS setup, or email delivery. Those require separate production verification.
-
-Local browser captures are generated by `npm run test:browser` and are not committed. No credentials, signup exports, internal workspace identifiers, or private deployment metadata belong in this report.
+Local captures are temporary evidence and are not committed. No personal signup records or credentials are used in this report.
 
 final result: passed
-
-The desktop audit identified stretched decorative planet/wave imagery; the display now preserves image aspect ratios. Public-crawler requests return the full HTML with HTTP 200. The robots policy allows public crawling; the signup endpoint still rejects GET requests and carries a noindex response header. Free public-repository CI runs the build, server tests, browser flows and accessibility/crawl checks without production credentials.
