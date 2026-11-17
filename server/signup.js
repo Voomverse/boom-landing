@@ -131,7 +131,7 @@ export async function handleSignup(
       adult: true,
       consent: true,
       privacyPolicyUrl,
-      privacyPolicyVersion: "ven-2026-11-17.2",
+      privacyPolicyVersion: "ven-2026-11-17.3",
       consentText:
         "Tengo 18 años o más. Acepto la política de privacidad y que VOOM me escriba.",
       consentVersion: "ven-2",

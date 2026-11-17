@@ -18,6 +18,7 @@
     "@fontsource/anton": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
     "@fontsource/jost": "^5.2.8",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.5.0",
     "lucide": "^0.577.0"
   },
