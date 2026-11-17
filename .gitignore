@@ -8,3 +8,4 @@ coverage/
 *.local
 signups*.csv
 signups*.json
+*.log

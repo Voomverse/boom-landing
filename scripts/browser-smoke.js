@@ -169,13 +169,35 @@ try {
       });
     await page.reload();
     await page.locator("#celebrity").waitFor();
+    const policyTabPromise = page.waitForEvent("popup");
     await page
       .getByRole("link", { name: "Política de privacidad", exact: true })
       .first()
       .click();
-    assert.equal(await page.getByRole("dialog").isVisible(), true);
-    await page.keyboard.press("Escape");
-    assert.equal(await page.getByRole("dialog").isVisible(), false);
+    const policyTab = await policyTabPromise;
+    policyTab.on("pageerror", (e) => errors.push(e.message));
+    await policyTab.waitForLoadState("networkidle");
+    assert.equal(new URL(policyTab.url()).pathname, "/privacidad/");
+    await policyTab
+      .getByRole("heading", { name: "Política de privacidad", exact: true })
+      .waitFor();
+    assert.equal(await policyTab.locator("article h2").count(), 11);
+    const policyText = await policyTab.locator("article").innerText();
+    assert.ok(policyText.includes("Vercel Blob"));
+    assert.ok(policyText.includes("24 horas"));
+    assert.ok(!policyText.includes("First Look"));
+    await checked(policyTab, `${device} bundled privacy page`);
+    if (device !== "small-mobile")
+      await policyTab.screenshot({
+        path: `${evidence}/${device}-privacy.png`,
+        fullPage: true,
+      });
+    await policyTab
+      .getByRole("link", { name: "Volver a VEN", exact: true })
+      .first()
+      .click();
+    await policyTab.locator("#celebrity").waitFor();
+    await policyTab.close();
     for (const path of ["/secreto", "/antes-de-morir", "/quanta"]) {
       await page.goto(base + path);
       await page.locator("#celebrity").waitFor();

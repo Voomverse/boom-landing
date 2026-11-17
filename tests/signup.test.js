@@ -107,10 +107,13 @@ test("private storage failure cannot return a success receipt", async () => {
   assert.equal(result.status, 503);
   assert.equal(result.body.receipt, undefined);
 });
-test("missing token or privacy policy blocks enrollment", async () => {
+test("missing token or invalid policy override blocks enrollment", async () => {
   for (const config of [
     {},
-    { BLOB_READ_WRITE_TOKEN: "test" },
+    {
+      BLOB_READ_WRITE_TOKEN: "test-only-token",
+      VITE_PRIVACY_POLICY_URL: "http://insecure.example/privacy",
+    },
     { VITE_PRIVACY_POLICY_URL: env.VITE_PRIVACY_POLICY_URL },
   ])
     assert.equal(
@@ -208,4 +211,17 @@ test("method, media type, origin, malformed JSON and body limits enforced", asyn
   oversized.headers = headers;
   oversized.method = "POST";
   assert.equal((await handleSignup(oversized, deps)).status, 413);
+});
+
+test("bundled VEN policy is the default when only private storage is configured", async () => {
+  const saved = [];
+  const result = await handleSignup(request(signup), {
+    ...deps,
+    env: { BLOB_READ_WRITE_TOKEN: "test-only-secret" },
+    put: async (...args) => saved.push(args),
+  });
+  assert.equal(result.status, 201);
+  const record = JSON.parse(saved[0][1]);
+  assert.equal(record.privacyPolicyUrl, "/privacidad/");
+  assert.equal(record.privacyPolicyVersion, "ven-2026-11-17");
 });

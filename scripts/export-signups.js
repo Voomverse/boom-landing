@@ -43,6 +43,7 @@ const columns = [
   "consent",
   "privacyPolicyUrl",
   "consentVersion",
+  "privacyPolicyVersion",
 ];
 const rows = (await records("signups/"))
   .sort((a, b) => a.createdAt.localeCompare(b.createdAt))

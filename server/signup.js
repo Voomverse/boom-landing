@@ -1,3 +1,4 @@
+import { resolvePrivacyPolicyUrl } from "../shared/privacy.js";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 
 const variants = new Set(["ven", "secreto", "antes-de-morir", "quanta"]);
@@ -63,10 +64,8 @@ export async function handleSignup(
   }
   if (!data || typeof data !== "object" || Array.isArray(data))
     return failure(400, "Solicitud no válida.");
-  if (
-    !env.BLOB_READ_WRITE_TOKEN ||
-    !/^https:\/\//.test(env.VITE_PRIVACY_POLICY_URL || "")
-  )
+  const privacyPolicyUrl = resolvePrivacyPolicyUrl(env.VITE_PRIVACY_POLICY_URL);
+  if (!env.BLOB_READ_WRITE_TOKEN || !privacyPolicyUrl)
     return failure(
       503,
       "Las inscripciones todavía no están abiertas. Vuelve pronto.",
@@ -108,7 +107,8 @@ export async function handleSignup(
       variant: data.variant,
       adult: true,
       consent: true,
-      privacyPolicyUrl: env.VITE_PRIVACY_POLICY_URL,
+      privacyPolicyUrl,
+      privacyPolicyVersion: "ven-2026-11-17",
       consentText:
         "Tengo 18 años o más. Acepto la política de privacidad y que VOOM me escriba.",
       consentVersion: "ven-1",

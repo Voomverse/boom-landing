@@ -4,15 +4,31 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/secreto", "destination": "/index.html" },
-    { "source": "/antes-de-morir", "destination": "/index.html" },
-    { "source": "/quanta", "destination": "/index.html" }
+    {
+      "source": "/secreto",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/antes-de-morir",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/quanta",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacidad",
+      "destination": "/privacidad/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"

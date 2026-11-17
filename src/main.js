@@ -35,15 +35,9 @@ const art = (name) =>
     : `<img class="art ${name}" src="/assets/${name}.webp" alt="" width="900" height="700">`;
 function privacyLinks() {
   document.querySelectorAll(".privacy-link").forEach((link) => {
-    if (privacyUrl) {
-      link.href = privacyUrl;
-      link.target = "_blank";
-      link.rel = "noopener";
-    } else
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        document.querySelector("#privacy-dialog").showModal();
-      });
+    link.href = privacyUrl;
+    link.target = "_blank";
+    link.rel = "noopener";
   });
 }
 privacyLinks();
@@ -79,7 +73,7 @@ function entry() {
         <p class="error" id="email-error" hidden>Revisa tu email: le falta algo.</p></div>
       <div class="consents" role="group" aria-describedby="consent-error">
         <label class="checkbox"><input id="adult" name="adult" type="checkbox" required><span>Tengo 18 años o más.</span></label>
-        <label class="checkbox"><input id="consent" name="consent" type="checkbox" required><span>Acepto la <a class="privacy-link" href="#privacidad">política de privacidad</a> y que VOOM me escriba.</span></label>
+        <label class="checkbox"><input id="consent" name="consent" type="checkbox" required><span>Acepto la <a class="privacy-link" href="/privacidad/">política de privacidad</a> y que VOOM me escriba.</span></label>
         <p class="error" id="consent-error" hidden>Marca las dos casillas para seguir.</p>
       </div>
       <div class="honeypot" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>

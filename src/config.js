@@ -1,5 +1,10 @@
-const privacy = import.meta.env.VITE_PRIVACY_POLICY_URL || "";
-export const privacyUrl = /^https:\/\//.test(privacy) ? privacy : "";
+import {
+  resolvePrivacyPolicyUrl,
+  defaultPrivacyPath,
+} from "../shared/privacy.js";
+export const privacyUrl =
+  resolvePrivacyPolicyUrl(import.meta.env.VITE_PRIVACY_POLICY_URL) ||
+  defaultPrivacyPath;
 const deadline = import.meta.env.VITE_CAMPAIGN_END;
 export const closingDate =
   deadline && Number.isFinite(Date.parse(deadline)) ? new Date(deadline) : null;
