@@ -2,10 +2,8 @@ import { icon } from "@fortawesome/fontawesome-svg-core";
 import {
   faInstagram,
   faTiktok,
-  faXTwitter,
   faFacebookF,
   faYoutube,
-  faLinkedinIn,
 } from "@fortawesome/free-brands-svg-icons";
 
 export const socialProfiles = [
@@ -19,14 +17,12 @@ export const socialProfiles = [
     href: "https://www.tiktok.com/@voom.oficial",
     icon: faTiktok,
   },
-  { name: "X", href: "#", icon: faXTwitter },
   {
     name: "Facebook",
     href: "https://www.facebook.com/voom.oficial/",
     icon: faFacebookF,
   },
   { name: "YouTube", href: "#", icon: faYoutube },
-  { name: "LinkedIn", href: "#", icon: faLinkedinIn },
 ];
 export function renderSocials() {
   return `<nav class="social-links" aria-label="Redes sociales"><p>Redes sociales${socialProfiles.every((profile) => profile.href === "#") ? " · Próximamente" : ""}</p><ul>${socialProfiles
