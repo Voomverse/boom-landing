@@ -681,6 +681,7 @@ dialog .button {
   .entry.ven {
     min-height: calc(100vh - 112px);
     min-height: calc(100svh - 112px);
+    align-content: center;
   }
   .entry.ven .display {
     font-size: clamp(42px, 4.85vw, 70px);
