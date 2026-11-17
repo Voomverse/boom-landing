@@ -44,10 +44,19 @@ const columns = [
   "privacyPolicyUrl",
   "consentVersion",
   "privacyPolicyVersion",
+  "country",
+  "region",
+  "city",
 ];
 const rows = (await records("signups/"))
   .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-  .map((record) => ({ ...record, plan: preferences.get(record.id) || "" }));
+  .map((record) => ({
+    ...record,
+    plan: preferences.get(record.id) || "",
+    country: record.location?.country || "",
+    region: record.location?.region || "",
+    city: record.location?.city || "",
+  }));
 const csv = [columns, ...rows.map((row) => columns.map((key) => row[key]))]
   .map((row) => row.map(cell).join(","))
   .join("\r\n");

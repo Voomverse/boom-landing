@@ -1,3 +1,10 @@
+import {
+  normalizeEmail,
+  signupPath,
+  signupExists,
+  canonicalSignupExists,
+  approximateLocation,
+} from "./signup-data.js";
 import { resolvePrivacyPolicyUrl } from "../shared/privacy.js";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 
@@ -39,7 +46,7 @@ async function bodyOf(req) {
 
 export async function handleSignup(
   req,
-  { env, put, now = Date.now, uuid = randomUUID },
+  { env, put, get, list, now = Date.now, uuid = randomUUID },
 ) {
   if (req.method !== "POST")
     return failure(405, "Método no permitido.", { Allow: "POST" });
@@ -92,6 +99,21 @@ export async function handleSignup(
     if (data.adult !== true || data.consent !== true)
       return failure(400, "Marca las dos casillas para seguir.");
     if (!variants.has(data.variant)) return failure(400, "Campaña no válida.");
+    const email = normalizeEmail(data.email);
+    const storage = { get, list, token: env.BLOB_READ_WRITE_TOKEN };
+    const duplicate = () =>
+      failure(
+        409,
+        "Este email ya está en VEN. No necesitas volver a inscribirte.",
+      );
+    try {
+      if (await signupExists(email, storage)) return duplicate();
+    } catch {
+      return failure(
+        503,
+        "No hemos podido comprobar tu inscripción. Inténtalo de nuevo.",
+      );
+    }
     const id = uuid();
     const createdAt = new Date(now()).toISOString();
     const expiresAt = now() + 24 * 60 * 60 * 1000;
@@ -102,29 +124,34 @@ export async function handleSignup(
     const record = {
       id,
       createdAt,
-      email: data.email.trim().toLowerCase(),
+      email,
+      location: approximateLocation(req.headers, env),
       celebrity: data.celebrity.trim(),
       variant: data.variant,
       adult: true,
       consent: true,
       privacyPolicyUrl,
-      privacyPolicyVersion: "ven-2026-11-17",
+      privacyPolicyVersion: "ven-2026-11-17.2",
       consentText:
         "Tengo 18 años o más. Acepto la política de privacidad y que VOOM me escriba.",
-      consentVersion: "ven-1",
+      consentVersion: "ven-2",
     };
     try {
-      await put(
-        `signups/${createdAt.slice(0, 10)}/${id}.json`,
-        JSON.stringify(record),
-        {
-          access: "private",
-          contentType: "application/json",
-          addRandomSuffix: false,
-          token: env.BLOB_READ_WRITE_TOKEN,
-        },
-      );
+      await put(signupPath(email), JSON.stringify(record), {
+        access: "private",
+        allowOverwrite: false,
+        contentType: "application/json",
+        addRandomSuffix: false,
+        token: env.BLOB_READ_WRITE_TOKEN,
+      });
     } catch {
+      // A competing request may have saved this email after our read. Never
+      // overwrite it or issue a receipt that could alter the existing signup.
+      try {
+        if (await canonicalSignupExists(email, storage)) return duplicate();
+      } catch {
+        /* Report an unavailable save below. */
+      }
       return failure(
         503,
         "No hemos podido guardar tu inscripción. Inténtalo de nuevo.",

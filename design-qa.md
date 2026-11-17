@@ -20,6 +20,12 @@ Applied the revised benefit copy, white QUANTA heading with magenta spaced subti
 
 Production build and all 27 browser checks pass. Reviewed updated desktop and mobile offer captures; the changes preserve the signup and plan-selection interactions and fit the tested 320, 390, and 1440 px widths.
 
+## Signup uniqueness and approximate location
+
+Server checks cover case/whitespace normalization, repeated submissions across campaigns, simultaneous submissions, compatibility with dated signup folders, and private country/region/city capture from Vercel headers. Existing records are preserved. The browser suite verifies duplicate submissions stay on the form and do not create another signup or issue a new receipt.
+
+Production build, 20 server tests, and 30 browser checks pass. Location and successful writes are tested with synthetic platform headers and private in-memory storage; no production credentials or personal records are used.
+
 ## Limits
 
 A passing local check is not evidence of a successful production deployment, private Blob connection, DNS setup, or email delivery. Those require separate production verification.

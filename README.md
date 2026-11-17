@@ -41,7 +41,11 @@ Vercel's plan eligibility and usage limits are separate from GitHub repository v
 | `/quanta`         | QUANTA entry        |
 | `/privacidad/`    | VEN privacy policy  |
 
-The form collects an email, a celebrity interest, and explicit age/marketing-consent declarations. A successful save leads to the QUANTA offer, where selecting a plan records a preference. There is no checkout, payment, account registration, or automatic email delivery.
+The form collects an email, a celebrity interest, and explicit age/marketing-consent declarations. New submissions are matched by email regardless of capitalization or surrounding spaces, across all campaign variants. Repeat submissions display an already-registered message without overwriting the original signup or granting access to its plan preference. Existing dated records are checked too; previously stored duplicates are preserved. New records use a SHA-256 email-derived filename under `signups/by-email/` in the private store, with overwrite protection. Checking the older dated folders requires additional storage reads.
+
+On Vercel, the signup also saves approximate **country, region, and city**, when available, from the platform geolocation headers. It does not request browser GPS access or store IP addresses or coordinates. Location can be inaccurate or missing (especially with VPNs/mobile networks); older signups are not backfilled.
+
+A successful save leads to the QUANTA offer, where selecting a plan records a preference. There is no checkout, payment, account registration, or automatic email delivery.
 
 Signup and preference records remain in private storage. A signed receipt held in browser session storage allows plan selection and refresh recovery for up to 24 hours; it does not contain the email or celebrity response. The API validates requests and reports storage failures without presenting a success screen.
 
@@ -82,7 +86,7 @@ With the store token loaded securely in the local process environment:
 npm run export:signups
 ```
 
-The script creates a Git-ignored CSV joining signup records to their latest plan preferences. Keep that file private. It never prints the token or signup contents to the console.
+The script creates a Git-ignored CSV joining signup records to their latest plan preferences, with country, region, and city columns (blank when unavailable). Keep that file private. It never prints the token or signup contents to the console.
 
 ## Assets
 

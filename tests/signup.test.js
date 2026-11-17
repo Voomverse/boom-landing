@@ -24,6 +24,8 @@ const request = (body) => ({ method: "POST", headers, body });
 const writes = [];
 const deps = {
   env,
+  get: async () => null,
+  list: async () => ({ blobs: [], folders: [], hasMore: false }),
   put: async (...args) => writes.push(args),
   uuid: () => "11111111-1111-4111-8111-111111111111",
   now: () => 1800000000000,
@@ -223,5 +225,5 @@ test("bundled VEN policy is the default when only private storage is configured"
   assert.equal(result.status, 201);
   const record = JSON.parse(saved[0][1]);
   assert.equal(record.privacyPolicyUrl, "/privacidad/");
-  assert.equal(record.privacyPolicyVersion, "ven-2026-11-17");
+  assert.equal(record.privacyPolicyVersion, "ven-2026-11-17.2");
 });

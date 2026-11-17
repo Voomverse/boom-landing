@@ -1,3 +1,4 @@
+import { memoryBlob } from "../tests/helpers/memory-blob.js";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -12,7 +13,8 @@ const browser = await chromium.launch({
     (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
   args: ["--no-sandbox"],
 });
-const records = [];
+const storage = memoryBlob();
+const records = storage.writes;
 const env = {
   BLOB_READ_WRITE_TOKEN: "test-only-in-memory-token",
   VITE_PRIVACY_POLICY_URL: "https://example.com/privacy",
@@ -29,9 +31,9 @@ async function checked(page, name) {
   );
   results.push(name);
 }
-async function fill(page) {
+async function fill(page, device) {
   await page.locator("#celebrity").fill("Rosalía");
-  await page.locator("#email").fill("browser-test@example.com");
+  await page.locator("#email").fill(`browser-test+${device}@example.com`);
   await page.locator("#adult").check();
   await page.locator("#consent").check();
 }
@@ -75,7 +77,7 @@ try {
         path: `${evidence}/mobile-errors.png`,
         fullPage: true,
       });
-    await fill(page);
+    await fill(page, device);
     await page.getByRole("button", { name: "AVÍSAME PRIMERO" }).click();
     await page
       .getByRole("alert")
@@ -98,7 +100,7 @@ try {
         },
         {
           env,
-          put: async (...args) => records.push(args),
+          ...storage,
         },
       );
       await route.fulfill({
@@ -115,6 +117,23 @@ try {
         path: `${evidence}/${device}-offer.png`,
         fullPage: true,
       });
+    const savedReceipt = await page.evaluate(() =>
+      sessionStorage.getItem("ven-receipt"),
+    );
+    await page.evaluate(() => sessionStorage.removeItem("ven-receipt"));
+    await page.reload();
+    await fill(page, device);
+    await page.getByRole("button", { name: "AVÍSAME PRIMERO" }).click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Este email ya está en VEN" })
+      .waitFor();
+    assert.equal(await page.locator(".signup").isVisible(), true);
+    results.push(`${device} duplicate email rejected without advancing`);
+    await page.evaluate(
+      (receipt) => sessionStorage.setItem("ven-receipt", receipt),
+      savedReceipt,
+    );
     await page.reload();
     await page.getByText("Hecho. Ya estás en VEN.").waitFor();
     results.push(`${device} reload resumes signed receipt`);
@@ -142,7 +161,7 @@ try {
           headers: { "content-type": "application/json" },
           body: route.request().postData(),
         },
-        { env, put: async (...args) => records.push(args) },
+        { env, ...storage },
       );
       await route.fulfill({
         status: result.status,
