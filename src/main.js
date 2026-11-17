@@ -58,7 +58,7 @@ function entry() {
   document.querySelector("#header-label").textContent = "VEN";
   document.body.dataset.screen = "entry";
   const expired = closingDate && new Date() > closingDate;
-  main.innerHTML = `<section class="entry shell ${variantKey}">
+  main.innerHTML = `<section class="entry shell">
     ${art(variant.art)}
     <div class="intro">
       <p class="eyebrow">${variant.label}</p>
@@ -82,6 +82,7 @@ function entry() {
       <button class="button primary" type="submit" ${expired ? "disabled" : ""}>${expired ? "INSCRIPCIONES CERRADAS" : "AVÍSAME PRIMERO"}</button>
     </form>
   </section>`;
+  main.querySelector(".entry.shell")?.classList.add(variantKey);
   reveal();
   const form = main.querySelector("form");
   form.addEventListener("submit", async (event) => {
