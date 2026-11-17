@@ -9,15 +9,23 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 
 export const socialProfiles = [
-  { name: "Instagram", href: "#", icon: faInstagram },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/voom.oficial/",
+    icon: faInstagram,
+  },
   { name: "TikTok", href: "#", icon: faTiktok },
   { name: "X", href: "#", icon: faXTwitter },
-  { name: "Facebook", href: "#", icon: faFacebookF },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/voom.oficial/",
+    icon: faFacebookF,
+  },
   { name: "YouTube", href: "#", icon: faYoutube },
   { name: "LinkedIn", href: "#", icon: faLinkedinIn },
 ];
 export function renderSocials() {
-  return `<nav class="social-links" aria-label="Redes sociales"><p>Redes sociales · Próximamente</p><ul>${socialProfiles
+  return `<nav class="social-links" aria-label="Redes sociales"><p>Redes sociales${socialProfiles.every((profile) => profile.href === "#") ? " · Próximamente" : ""}</p><ul>${socialProfiles
     .map((profile) => {
       const pending = profile.href === "#";
       const label = `${profile.name}${pending ? " (próximamente)" : " (se abre en otra pestaña)"}`;

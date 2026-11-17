@@ -1,3 +1,5 @@
+import { socialProfiles } from "./socials.js";
+
 export const siteOrigin = "https://www.voomverse.com";
 export const pages = [
   {
@@ -47,6 +49,9 @@ export function structuredData(page) {
         legalName: "Voomverse, S.L.U.",
         alternateName: "VOOM",
         url: siteOrigin + "/",
+        sameAs: socialProfiles
+          .filter((profile) => profile.href !== "#")
+          .map((profile) => profile.href),
         logo: {
           "@type": "ImageObject",
           url: siteOrigin + "/assets/voom-logo.webp",

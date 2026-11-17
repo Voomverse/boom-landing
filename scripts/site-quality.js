@@ -1,3 +1,4 @@
+import { socialProfiles } from "../shared/socials.js";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -55,7 +56,19 @@ try {
         (item) => item["@type"] === "Organization" && item.name === "Voomverse",
       ),
     );
-    assert.ok(!JSON.stringify(schema).includes('"sameAs":["#"'));
+    const activeProfiles = socialProfiles.filter(
+      (profile) => profile.href !== "#",
+    );
+    assert.deepEqual(
+      schema["@graph"].find((item) => item["@type"] === "Organization").sameAs,
+      activeProfiles.map((profile) => profile.href),
+    );
+    for (const profile of activeProfiles) {
+      const link = page.locator(`.social-links a[href="${profile.href}"]`);
+      assert.equal(await link.getAttribute("target"), "_blank");
+      assert.equal(await link.getAttribute("aria-disabled"), null);
+      assert.ok((await link.getAttribute("rel")).includes("noopener"));
+    }
     assert.equal(await page.locator("img:not([alt])").count(), 0);
     if (target.variant) {
       assert.ok(
@@ -71,7 +84,7 @@ try {
         await page
           .locator('.social-links a[aria-disabled="true"][href="#"]')
           .count(),
-        6,
+        socialProfiles.filter((profile) => profile.href === "#").length,
       );
     }
     report.crawlChecks.push(target.path);
