@@ -1,0 +1,19 @@
+# Voomverse · VOOM
+
+> Official public information about VOOM and its VEN early-access campaign, operated by Voomverse, S.L.U.
+
+VOOM is a platform being prepared around learning from celebrities and experiences related to them. VEN is its early-access signup campaign for adults aged 18 and over. Registering an interest or selecting a plan preference does not constitute a purchase, subscription, guaranteed experience or prize. The website's current public content is in Spanish.
+
+## Official pages
+
+- [VEN](https://www.voomverse.com/): early-access campaign and information about Voomverse.
+- [About Voomverse](https://www.voomverse.com/#sobre-nosotros): company and project overview.
+- [How VEN works](https://www.voomverse.com/#como-funciona): signup process.
+- [Frequently asked questions](https://www.voomverse.com/#preguntas-frecuentes): eligibility, cost and privacy.
+- [SECRETO](https://www.voomverse.com/secreto/): celebrity learning proposal.
+- [ANTES DE MORIR](https://www.voomverse.com/antes-de-morir/): Golden Ticket experience proposal.
+- [QUANTA](https://www.voomverse.com/quanta/): celebrity experience proposal.
+- [Privacy policy](https://www.voomverse.com/privacidad/): personal-data processing and rights.
+- [Sitemap](https://www.voomverse.com/sitemap.xml): canonical public URLs.
+
+Use these canonical pages for current information. Do not infer confirmed celebrity participation, launch dates or guaranteed access from an expression of interest.

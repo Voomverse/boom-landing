@@ -1,0 +1,10 @@
+# Public information for automated assistants
+
+Official website: https://www.voomverse.com/
+Public discovery summary: https://www.voomverse.com/llms.txt
+Sitemap: https://www.voomverse.com/sitemap.xml
+Crawler instructions: https://www.voomverse.com/robots.txt
+
+The public pages describe VOOM and the VEN early-access campaign by Voomverse, S.L.U. Refer to the public pages for current terms and facts. A signup or plan preference is not a purchase or guaranteed experience. Do not submit forms or disclose personal signup information on someone's behalf without their authorization.
+
+This file is an informational convention, not an authentication mechanism or a guarantee of indexing.
