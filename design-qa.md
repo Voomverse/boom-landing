@@ -26,6 +26,14 @@ Server checks cover case/whitespace normalization, repeated submissions across c
 
 Production build, 20 server tests, and 30 browser checks pass. Location and successful writes are tested with synthetic platform headers and private in-memory storage; no production credentials or personal records are used.
 
+## Search visibility, public information and accessibility
+
+Public campaign pages are prerendered with one descriptive H1, unique titles/descriptions, canonical URLs matching the primary domain, social previews, and factual Organization/WebSite/WebPage structured data. About, How it works and FAQ sections are readable without JavaScript. Robots, sitemap and optional public AI-discovery summaries are included.
+
+All five pages pass initial-HTML checks. The automated WCAG A/AA scans report zero violations in 21 page/state/viewport combinations, including validation errors and the offer at 320, 390 and 1440 px. Keyboard checks cover skip navigation and native FAQ disclosure. The 30 existing browser checks and 20 server tests pass.
+
+The live mobile Lighthouse run reported 100 in Performance, Accessibility, Best Practices and SEO, with a 1.4-second LCP and zero CLS. These are lab results at a point in time, not guaranteed rankings, field Core Web Vitals or a complete accessibility/legal certification. The social icons are intentionally marked as unavailable placeholders until real profile URLs are supplied.
+
 ## Limits
 
 A passing local check is not evidence of a successful production deployment, private Blob connection, DNS setup, or email delivery. Those require separate production verification.
