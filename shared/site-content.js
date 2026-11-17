@@ -1,16 +1,9 @@
+import { renderAbout } from "./about.js";
 import { renderSocials } from "./socials.js";
 export function renderInformation() {
-  return `<div class="site-information shell">
-    <section id="sobre-nosotros" class="information-section" aria-labelledby="about-title">
-      <p class="eyebrow">VOOMVERSE · VOOM</p>
-      <h2 class="display" id="about-title">SOBRE NOSOTROS</h2>
-      <div class="information-copy">
-        <p>Voomverse, S.L.U. es la compañía detrás de VOOM. Estamos preparando una plataforma para descubrir nuevas formas de aprender de celebrities y vivir experiencias relacionadas con ellas.</p>
-        <p>VEN es nuestra campaña de acceso anticipado. Antes de que VOOM abra, queremos saber de quién te gustaría aprender y con quién te gustaría compartir una experiencia. Tu respuesta nos ayuda a conocer los intereses de quienes llegan primero.</p>
-        <p>SECRETO explora las fórmulas y aprendizajes de tus ídolos. ANTES DE MORIR presenta la idea de vivir una experiencia de su lista de sueños. QUANTA reúne propuestas para acercarte a su universo. Son las distintas puertas de entrada a lo que estamos preparando.</p>
-        <nav class="campaign-links" aria-label="Explora las propuestas de VOOM"><a href="/secreto/">SECRETO</a><a href="/antes-de-morir/">ANTES DE MORIR</a><a href="/quanta/">QUANTA</a></nav>
-      </div>
-    </section>
+  return `<div class="site-information">
+    ${renderAbout()}
+    <div class="shell information-rest">
     <section id="como-funciona" class="information-section" aria-labelledby="how-title">
       <p class="eyebrow">TU PRIMER PASO</p><h2 class="display" id="how-title">CÓMO FUNCIONA VEN</h2>
       <ol class="steps-grid">
@@ -29,6 +22,7 @@ export function renderInformation() {
         <details><summary>¿Cómo puedo consultar o borrar mis datos?</summary><p>Puedes escribir a <a href="mailto:legal@voomverse.com">legal@voomverse.com</a> indicando el email con el que te inscribiste y tu solicitud. En la <a href="/privacidad/">política de privacidad</a> explicamos qué datos recogemos y cómo ejercer tus derechos.</p></details>
       </div>
     </section>
+    </div>
   </div>`;
 }
 export function footerDetails(year = new Date().getUTCFullYear()) {
