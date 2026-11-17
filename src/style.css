@@ -667,6 +667,10 @@ dialog .button {
   width: 100%;
 }
 @media (min-width: 800px) {
+  .entry.ven {
+    min-height: calc(100vh - 112px);
+    min-height: calc(100svh - 112px);
+  }
   .entry.ven .display {
     font-size: clamp(42px, 4.85vw, 70px);
     line-height: 1;
