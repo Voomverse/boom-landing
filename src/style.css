@@ -439,6 +439,9 @@ main:focus {
   font-size: 16px;
   line-height: 1.6;
 }
+.benefit-highlight {
+  color: #00ee00;
+}
 .benefit-grid svg {
   color: #e33ad1;
   width: 23px;

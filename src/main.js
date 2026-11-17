@@ -174,10 +174,10 @@ function offer(receipt) {
     <section class="offer-hero">${art("door")}<h1 class="display">Y AHORA,<b class="desktop-only"> LO QUE</b><span><b class="mobile-only">LO QUE </b>VINISTE<br class="mobile-break"> A BUSCAR.</span></h1></section>
     <section class="benefits" aria-labelledby="benefits-title"><div><h2 class="display" id="benefits-title">QUANTA</h2><p class="eyebrow benefits-tagline">EL CÍRCULO MÁS CERCANO A LAS CELEBRITIES</p></div>
     <ul class="benefit-grid">
-      <li class="panel"><i data-lucide="moon"></i><p>Vive experiencias con celebrities, cara a cara.</p></li>
-      <li class="panel"><i data-lucide="star"></i><p>Obtén el mejor sitio en sus shows y eventos.</p></li>
-      <li class="panel"><i data-lucide="key-round"></i><p>Descubre El Secreto valioso de cada celebrity.</p></li>
-      <li class="panel"><i data-lucide="ticket"></i><p>Participa en sorteos de experiencias y apariciones en series verticales con ellos.</p></li>
+      <li class="panel"><i data-lucide="moon"></i><p>Vive <span class="benefit-highlight">experiencias</span> con celebrities, cara a cara.</p></li>
+      <li class="panel"><i data-lucide="star"></i><p>Obtén el <span class="benefit-highlight">mejor sitio</span> en sus shows y eventos.</p></li>
+      <li class="panel"><i data-lucide="key-round"></i><p>Descubre <span class="benefit-highlight">El Secreto</span> valioso de cada celebrity.</p></li>
+      <li class="panel"><i data-lucide="ticket"></i><p>Participa en <span class="benefit-highlight">sorteos</span> de <span class="benefit-highlight">experiencias</span> y apariciones en <span class="benefit-highlight">series verticales</span> con ellos.</p></li>
     </ul></section>
     <section class="pricing" aria-label="Planes de VOOM"><p class="pricing-intro">APROVECHA. Una oportunidad por tiempo limitado.</p>
       <div class="price-grid">
