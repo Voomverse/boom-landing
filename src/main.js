@@ -19,6 +19,12 @@ import "./style.css";
 import { renderEntry, renderArt } from "../shared/render-entry.js";
 
 const main = document.querySelector("#experience");
+document.querySelector(".how-cta")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  const target = main.querySelector("#celebrity") || main;
+  target.scrollIntoView({ block: target === main ? "start" : "center" });
+  target.focus({ preventScroll: true });
+});
 const params = new URLSearchParams(location.search);
 const path = location.pathname.replace(/^\/+|\/+$/g, "");
 const variantKey = Object.hasOwn(variants, params.get("variant"))
