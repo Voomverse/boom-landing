@@ -21,6 +21,13 @@ const env = {
 };
 const errors = [];
 const results = [];
+const taggedSignup = {
+  utm_source: "instagram",
+  utm_medium: "social",
+  utm_campaign: "ven",
+  utm_content: "bio",
+  utm_term: "Rosalía",
+};
 async function checked(page, name) {
   assert.equal(
     await page.evaluate(
@@ -50,7 +57,11 @@ try {
       reducedMotion: "reduce",
     });
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto(base);
+    const entryUrl = new URL(base);
+    if (device === "desktop") {
+      entryUrl.search = new URLSearchParams({ ...taggedSignup, ignored: "other" });
+    }
+    await page.goto(entryUrl.href);
     await page.evaluate(() => document.fonts.ready);
     await checked(page, `${device} entry`);
     if (device !== "small-mobile")
@@ -232,10 +243,12 @@ try {
     }
     await page.close();
   }
-  assert.equal(
-    records.filter((record) => record[0].startsWith("signups/")).length,
-    3,
+  const signups = records.filter(([path]) => path.startsWith("signups/"));
+  assert.deepEqual(
+    signups.map(([, raw]) => JSON.parse(raw).utm),
+    [taggedSignup, undefined, undefined],
   );
+  results.push("Tagged signup attribution and untagged signups in private storage");
   assert.equal(
     records.filter((record) => record[0].startsWith("preferences/")).length,
     3,

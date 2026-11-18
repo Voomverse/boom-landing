@@ -6,6 +6,7 @@ import {
   approximateLocation,
 } from "./signup-data.js";
 import { resolvePrivacyPolicyUrl } from "../shared/privacy.js";
+import { normalizeUtm } from "../shared/utm.js";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 
 const variants = new Set(["ven", "secreto", "antes-de-morir", "quanta"]);
@@ -121,6 +122,7 @@ export async function handleSignup(
       "base64url",
     );
     const receipt = `${payload}.${sign(payload, env.BLOB_READ_WRITE_TOKEN)}`;
+    const utm = normalizeUtm(data.utm);
     const record = {
       id,
       createdAt,
@@ -128,10 +130,11 @@ export async function handleSignup(
       location: approximateLocation(req.headers, env),
       celebrity: data.celebrity.trim(),
       variant: data.variant,
+      ...(utm && { utm }),
       adult: true,
       consent: true,
       privacyPolicyUrl,
-      privacyPolicyVersion: "ven-2026-11-17.3",
+      privacyPolicyVersion: "ven-2026-11-18",
       consentText:
         "Tengo 18 años o más. Acepto la política de privacidad y que VOOM me escriba.",
       consentVersion: "ven-2",

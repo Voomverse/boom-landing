@@ -145,6 +145,51 @@ test("missing location is allowed and arbitrary client location is ignored", asy
   assert.equal(JSON.parse(store.writes[0][1]).location, null);
   assert.equal(approximateLocation({}, { VERCEL: "1" }), null);
 });
+test("optional signup attribution keeps only valid campaign labels in the private record", async () => {
+  const store = memoryBlob();
+  const result = await handleSignup(
+    request({
+      ...input,
+      utm: {
+        utm_source: " instagram.bio ",
+        utm_medium: "social",
+        utm_campaign: "Apertura cafe\u0301-2026",
+        utm_content: "https%3A%2F%2Fexample.com",
+        utm_term: "fan@example.com",
+        extra: "ignore-me",
+      },
+    }),
+    { env, ...store },
+  );
+  assert.equal(result.status, 201);
+  assert.equal(result.body.utm, undefined);
+  assert.deepEqual(JSON.parse(store.writes[0][1]).utm, {
+    utm_source: "instagram.bio",
+    utm_medium: "social",
+    utm_campaign: "Apertura café-2026",
+  });
+  assert.equal(store.writes[0][2].access, "private");
+
+  for (const [index, utm] of [
+    {
+      utm_source: ["instagram"],
+      utm_medium: "x".repeat(121),
+      utm_campaign: "new\nlaunch",
+      utm_content: "https://example.com",
+      utm_term: " ",
+    },
+    "utm_source=instagram",
+    undefined,
+  ].entries()) {
+    const email = `other${index}@example.com`;
+    const result = await handleSignup(request({ ...input, email, utm }), {
+      env,
+      ...store,
+    });
+    assert.equal(result.status, 201);
+    assert.equal(JSON.parse(store.writes.at(-1)[1]).utm, undefined);
+  }
+});
 test("malformed and oversized geo headers are discarded", () => {
   const location = approximateLocation(
     {
