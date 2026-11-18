@@ -53,4 +53,5 @@ jobs:
           curl -fsS http://127.0.0.1:4173/ > /dev/null
           curl -fsS http://127.0.0.1:4176/ > /dev/null
           npm run test:browser
+          npm run test:intro
           npm run test:quality
