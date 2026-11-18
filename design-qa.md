@@ -60,12 +60,14 @@ The later request to halve vertical gaps supersedes the PDF's outer section spac
 
 ## Feature-branch video intro
 
-- The supplied 8.04-second cinematic clip is delivered as a 3.6 MB H.264 MP4 with a 26 KB poster. The original AAC audio bitstream is preserved exactly. Sound-only captions identify the music and effects; the user confirmed there is no speech.
-- A native modal dialog introduces the root VEN landing once per tab. An explicit play gesture enables sound and starts the full video download. Native playback controls, skipping and Escape are supported. Completion reveals and focuses the existing landing.
-- Reduced-motion visitors, deep links, other campaigns, existing signups, and browsers without JavaScript reach the landing directly. Missing video and blocked playback have usable fallbacks.
-- Browser captures: `/tmp/ven-intro-qa/intro-1440.png`, `intro-390.png`, `intro-320.png`, `playing-desktop.png` and `playing-mobile.png`. Additional control-fit checks cover 320 × 568, 844 × 390 and 2560 × 1440. The video preserves its cinematic aspect ratio.
-- All 16 intro checks pass, including real unmuted playback, decoded audio, natural completion, keyboard skip, post-intro form validation, storage failure and media-error recovery. Four intro accessibility scans report zero violations. No unexpected console errors or uncaught browser errors were observed.
+- The supplied landscape and portrait clips run for approximately eight seconds. They are served as H.264 MP4s (3.6 MB landscape; 2.9 MB portrait), with matching WebP posters. Both original AAC audio bitstreams are preserved exactly. Sound-only captions identify the music and effects; the user confirmed there is no speech.
+- A native modal dialog introduces the root VEN landing once per tab. Playback starts automatically and muted, with an explicit sound toggle for browser autoplay compatibility. Compact pause/resume and skip controls retain 44 px minimum touch targets. Escape also dismisses the intro.
+- The orientation at opening selects the portrait or landscape clip; only that version downloads. The framing is preserved without cropping. The source stays loaded during a 650 ms opacity fade into the existing landing, then unloads and restores focus to the main content.
+- Reduced-motion visitors, deep links, other campaigns, existing signups, and browsers without JavaScript reach the landing directly. Missing media fails open. An autoplay-policy rejection exposes a compact play action while preserving the sound and skip controls. The `?intro=replay` query allows repeated preview review.
+- Browser captures: `/tmp/ven-intro-qa/intro-1440.png`, `intro-390.png`, `intro-320.png`, `intro-844.png`, `playing-desktop.png` and `playing-mobile.png`. Viewports cover 1440 × 900, 390 × 844, 320 × 568 and 844 × 390.
+- All 18 intro checks pass, including real muted autoplay, orientation-specific requests, unmuted audio decoding, pause/resume, natural completion, the fade, keyboard skip, post-intro form validation, replay, storage failure and media-error recovery. Five intro accessibility scans report zero violations. No unexpected console errors or uncaught browser errors were observed.
 - The 30 existing browser-flow checks and 21 landing accessibility scans also pass. Five pages retain their initial-HTML crawl checks. The landing suite uses reduced-motion mode to test the underlying page; intro states are covered separately.
 - Intro tests verify footer markup is identical before and after dismissal. Existing layout, typography, section spacing and signup storage are preserved. This work is confined to the feature branch.
+- CI uses Chrome with H.264/AAC support so playback tests exercise the delivered media format.
 
 final result: passed
