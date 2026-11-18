@@ -231,4 +231,6 @@ try {
 }
 if (saved?.receipt && saved?.expiresAt > Date.now()) offer(saved);
 else entry();
-initIntro({ enabled: variantKey === "ven" });
+const isHome = path === "" && variantKey === "ven";
+const isTaggedCampaign = utm !== null && path !== "ven" && Object.hasOwn(variants, path);
+initIntro({ enabled: isHome || isTaggedCampaign });

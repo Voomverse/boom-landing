@@ -2,28 +2,47 @@ import { Pause, Play, Volume2, VolumeX } from "lucide-static";
 import "./intro.css";
 
 const seenKey = "ven-intro-seen-v2";
+const seenStores = ["localStorage", "sessionStorage"];
 const decorative = (svg) =>
   svg.replace("<svg", '<svg aria-hidden="true" focusable="false"');
+
+function rememberIntro() {
+  for (const store of seenStores) {
+    try {
+      window[store].setItem(seenKey, "1");
+    } catch {
+      // The intro works with either browser store or neither.
+    }
+  }
+}
+
+function hasSeenIntro() {
+  for (const store of seenStores) {
+    try {
+      if (window[store].getItem(seenKey) !== "1") continue;
+      // Carry forward the old per-tab marker when that tab is revisited.
+      if (store === "sessionStorage") rememberIntro();
+      return true;
+    } catch {
+      // Continue to the other store if access is blocked.
+    }
+  }
+  return false;
+}
 
 export function initIntro({ enabled = true } = {}) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   if (
     !enabled ||
-    window.location.pathname !== "/" ||
     window.location.hash ||
     document.body.dataset.screen !== "entry" ||
     reducedMotion.matches ||
     typeof HTMLDialogElement === "undefined" ||
     !HTMLDialogElement.prototype.showModal ||
-    document.querySelector("#ven-intro")
+    document.querySelector("#ven-intro") ||
+    hasSeenIntro()
   )
     return;
-
-  try {
-    if (sessionStorage.getItem(seenKey)) return;
-  } catch {
-    // Storage is optional.
-  }
 
   const portrait = window.matchMedia("(orientation: portrait)").matches;
   const asset = portrait ? "ven-intro-portrait" : "ven-intro";
@@ -84,19 +103,15 @@ export function initIntro({ enabled = true } = {}) {
     if (dialog.open) dialog.close();
     dialog.remove();
     document.documentElement.classList.remove("intro-is-open");
-    try {
-      sessionStorage.setItem(seenKey, "1");
-    } catch {
-      // The landing must remain usable when storage is blocked.
-    }
     document.querySelector("#main")?.focus({ preventScroll: true });
   }
 
-  function finish({ animate = true } = {}) {
+  function finish() {
     if (leaving || disposed) return;
     leaving = true;
+    rememberIntro();
     video.pause();
-    if (!animate || reducedMotion.matches) {
+    if (reducedMotion.matches) {
       cleanup();
       return;
     }
@@ -111,7 +126,7 @@ export function initIntro({ enabled = true } = {}) {
     } catch (error) {
       if (leaving || disposed) return;
       if (error.name === "NotSupportedError") {
-        finish({ animate: false });
+        cleanup();
         return;
       }
       status.textContent = started
@@ -138,7 +153,7 @@ export function initIntro({ enabled = true } = {}) {
   video.addEventListener("pause", syncPlayback, options);
   video.addEventListener("volumechange", syncSound, options);
   video.addEventListener("ended", () => finish(), options);
-  video.addEventListener("error", () => finish({ animate: false }), options);
+  video.addEventListener("error", cleanup, options);
   dialog.querySelector(".intro-skip").addEventListener("click", () => finish(), options);
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault();

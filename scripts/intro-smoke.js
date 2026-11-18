@@ -17,9 +17,11 @@ const browser = await chromium.launch({
 let autoplayBrowser;
 const report = { checks: [], accessibility: [], errors: [], consoleErrors: [] };
 const mediaPath = /\/assets\/ven-intro(?:-portrait)?\.mp4(?:\?|$)/;
+const seenKey = "ven-intro-seen-v2";
+const campaignTags = "?utm_source=instagram&utm_medium=social&utm_campaign=ven";
 
-async function pageFor(options = {}, { expectedMediaError = false, testBrowser = browser } = {}) {
-  const context = await testBrowser.newContext({
+async function pageFor(options = {}, { expectedMediaError = false, testBrowser = browser, existingContext } = {}) {
+  const context = existingContext ?? await testBrowser.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: 1,
     reducedMotion: "no-preference",
@@ -62,6 +64,21 @@ async function landingReady(page) {
   await page.locator("#ven-intro").waitFor({ state: "detached" });
   assert.equal(await page.evaluate(() => document.documentElement.classList.contains("intro-is-open")), false);
   assert.equal(await page.getByRole("button", { name: "AVÍSAME PRIMERO" }).isVisible(), true);
+}
+
+async function expectNoIntro(page, path) {
+  const introRequests = [];
+  const record = request => {
+    if (mediaPath.test(request.url())) introRequests.push(request.url());
+  };
+  page.on("request", record);
+  try {
+    await page.goto(base + path);
+    await landingReady(page);
+    assert.deepEqual(introRequests, [], `No intro video should load for ${path}`);
+  } finally {
+    page.off("request", record);
+  }
 }
 
 async function scan(page, state) {
@@ -162,12 +179,12 @@ try {
   report.checks.push("Unmuted autoplay without interaction, pause/resume, captions and natural completion into the landing");
   report.media = media;
 
-  let replayRequests = 0;
-  playing.on("request", request => { if (mediaPath.test(request.url())) replayRequests++; });
-  await playing.goto(base + "/?intro=replay");
-  await landingReady(playing);
-  assert.equal(replayRequests, 0, "The old replay query does not reload a completed intro");
+  await expectNoIntro(playing, "/?intro=replay");
   report.checks.push("The replay query does not reopen the intro after completion");
+  const afterHome = await pageFor({}, { existingContext: playing.context() });
+  await expectNoIntro(afterHome, "/secreto/" + campaignTags);
+  assert.equal(await afterHome.locator(".entry.shell.secreto").isVisible(), true);
+  report.checks.push("Completing the homepage intro skips playback on a tagged campaign in a new tab");
   await playing.context().close();
 
   const escape = await pageFor({ viewport: { width: 390, height: 844 }, hasTouch: true });
@@ -191,6 +208,7 @@ try {
     ["SECRETO", "/secreto/", {}],
     ["ANTES DE MORIR", "/antes-de-morir/", {}],
     ["QUANTA", "/quanta/", {}],
+    ["invalid campaign tags", "/quanta/?utm_source=https%3A%2F%2Fexample.com", {}],
     ["query campaign", "/?variant=quanta", {}],
   ]) {
     const page = await pageFor(options);
@@ -204,6 +222,32 @@ try {
     report.checks.push(`Intro bypass: ${label}`);
     await page.context().close();
   }
+
+  for (const variant of ["secreto", "antes-de-morir", "quanta"]) {
+    const tagged = await pageFor();
+    await tagged.goto(base + `/${variant}/` + campaignTags);
+    const start = await soundStartButton(tagged);
+    await start.click();
+    await waitForAudiblePlayback(tagged);
+    await tagged.getByRole("button", { name: "Saltar vídeo" }).click();
+    await landingReady(tagged);
+    assert.equal(await tagged.locator(`.entry.shell.${variant}`).isVisible(), true);
+    assert.equal(await tagged.evaluate(key => localStorage.getItem(key), seenKey), "1");
+
+    const afterCampaign = await pageFor({}, { existingContext: tagged.context() });
+    await expectNoIntro(afterCampaign, "/");
+    report.checks.push(`Tagged /${variant}/ plays once and skips playback on the homepage in a new tab`);
+    await tagged.context().close();
+  }
+
+  const legacySession = await pageFor();
+  await legacySession.addInitScript(key => sessionStorage.setItem(key, "1"), seenKey);
+  await expectNoIntro(legacySession, "/");
+  const afterMigration = await pageFor({}, { existingContext: legacySession.context() });
+  await expectNoIntro(afterMigration, "/quanta/" + campaignTags);
+  assert.equal(await afterMigration.evaluate(key => localStorage.getItem(key), seenKey), "1");
+  report.checks.push("An existing tab's seen flag is carried to other tabs");
+  await legacySession.context().close();
 
   const returning = await pageFor();
   await returning.addInitScript(() => sessionStorage.setItem("ven-receipt", JSON.stringify({ receipt: "intro-test-only", expiresAt: Date.now() + 60000 })));
@@ -225,14 +269,34 @@ try {
   report.checks.push("Unavailable storage still permits the landing");
   await privateMode.context().close();
 
+  const sessionFallback = await pageFor();
+  await sessionFallback.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() { throw new DOMException("Blocked", "SecurityError"); },
+    });
+  });
+  await sessionFallback.goto(base);
+  await soundStartButton(sessionFallback);
+  await sessionFallback.getByRole("button", { name: "Saltar vídeo" }).click();
+  await landingReady(sessionFallback);
+  assert.equal(await sessionFallback.evaluate(key => sessionStorage.getItem(key), seenKey), "1");
+  await expectNoIntro(sessionFallback, "/quanta/" + campaignTags);
+  report.checks.push("Session storage prevents repeated playback when local storage is unavailable");
+  await sessionFallback.context().close();
+
   const missing = await pageFor({}, { expectedMediaError: true });
-  let failedRequests = 0;
-  await missing.route(mediaPath, route => { failedRequests++; return route.fulfill({ status: 404, body: "" }); });
-  await missing.goto(base);
-  await missing.waitForFunction(() => document.body.dataset.screen === "entry" && sessionStorage.getItem("ven-intro-seen-v2") === "1");
+  await missing.route(mediaPath, route => route.fulfill({ status: 404, body: "" }));
+  await Promise.all([
+    missing.waitForResponse(response => mediaPath.test(response.url()) && response.status() === 404),
+    missing.goto(base),
+  ]);
   await landingReady(missing);
-  assert.ok(failedRequests > 0);
-  report.checks.push("Missing media automatically falls back to the landing");
+  const seenAfterError = await missing.evaluate(key => [
+    localStorage.getItem(key),
+    sessionStorage.getItem(key),
+  ], seenKey);
+  assert.deepEqual(seenAfterError, [null, null]);
+  report.checks.push("Missing media falls back to the landing without marking the intro as seen");
   await missing.context().close();
 
   assert.deepEqual(report.errors, []);
