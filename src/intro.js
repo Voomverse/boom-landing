@@ -35,7 +35,7 @@ export function initIntro({ enabled = true } = {}) {
   dialog.innerHTML = `
     <h2 class="intro-accessible" id="intro-title">Presentación de VOOM</h2>
     <p class="intro-accessible" id="intro-description">Vídeo de 8 segundos con música y efectos de sonido. Puedes silenciarlo, pausarlo o saltar la introducción.</p>
-    <video class="intro-video" playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
+    <video class="intro-video${portrait ? " intro-video-portrait" : ""}" playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
       <track kind="captions" src="/assets/ven-intro.es.vtt" srclang="es" label="Español (sonido)">
     </video>
     <img class="intro-logo" src="/assets/voom-intro-logo.webp" alt="VOOM" width="330" height="101">

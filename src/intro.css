@@ -37,12 +37,26 @@ html.intro-is-open {
   white-space: nowrap;
 }
 .intro-video {
+  --intro-source-ratio: calc(1920 / 824);
+  --intro-zoom-limit: 1.36;
   position: absolute;
   inset: 0;
+  margin-inline: auto;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  /* Top-align the frame and cap the crop when the viewport is much taller or wider. */
+  max-width: calc(100dvh * var(--intro-source-ratio) * var(--intro-zoom-limit));
+  max-height: calc(100vw / var(--intro-source-ratio) * var(--intro-zoom-limit));
+  object-fit: cover;
+  object-position: center 60%;
   background: #000;
+}
+.intro-video-portrait {
+  --intro-source-ratio: calc(720 / 1280);
+  --intro-zoom-limit: 1.25;
+  /* The portrait clip has extra headroom in the footage. */
+  transform: scale(1.08);
+  transform-origin: center bottom;
 }
 .intro-logo {
   position: absolute;
