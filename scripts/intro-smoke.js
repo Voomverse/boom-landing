@@ -6,16 +6,20 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 const base = process.env.INTRO_BASE_URL || "http://127.0.0.1:4176";
 const output = process.env.INTRO_OUTPUT_DIR || "/tmp/ven-intro-qa";
 mkdirSync(output, { recursive: true });
-const browser = await chromium.launch({
+const browserOptions = {
   executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
     (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
-  args: ["--no-sandbox"],
+};
+const browser = await chromium.launch({
+  ...browserOptions,
+  args: ["--no-sandbox", "--autoplay-policy=user-gesture-required"],
 });
+let autoplayBrowser;
 const report = { checks: [], accessibility: [], errors: [], consoleErrors: [] };
 const mediaPath = /\/assets\/ven-intro(?:-portrait)?\.mp4(?:\?|$)/;
 
-async function pageFor(options = {}, expectedMediaError = false) {
-  const context = await browser.newContext({
+async function pageFor(options = {}, { expectedMediaError = false, testBrowser = browser } = {}) {
+  const context = await testBrowser.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: 1,
     reducedMotion: "no-preference",
@@ -34,12 +38,23 @@ async function pageFor(options = {}, expectedMediaError = false) {
   return page;
 }
 
-async function autoplay(page) {
+async function waitForAudiblePlayback(page) {
   await page.getByRole("dialog", { name: "Presentación de VOOM" }).waitFor();
   await page.waitForFunction(() => {
     const video = document.querySelector(".intro-video");
-    return video && !video.paused && video.currentTime > 0.1;
+    return video && !video.muted && video.volume > 0 && !video.paused && video.currentTime > 0.1;
   });
+}
+
+async function soundStartButton(page) {
+  const button = page.getByRole("button", { name: "Reproducir con sonido", exact: true });
+  await button.waitFor();
+  const video = await page.locator(".intro-video").evaluate(element => ({
+    paused: element.paused, muted: element.muted, currentTime: element.currentTime,
+  }));
+  assert.deepEqual(video, { paused: true, muted: false, currentTime: 0 },
+    "The blocked intro waits at its first frame with sound enabled");
+  return button;
 }
 
 async function landingReady(page) {
@@ -64,8 +79,13 @@ try {
     const requests = [];
     page.on("request", request => { if (mediaPath.test(request.url())) requests.push(request.url()); });
     await page.goto(base);
-    await autoplay(page);
-    assert.equal(await page.locator("video").evaluate(v => v.muted), true);
+    const start = await soundStartButton(page);
+    if (width === 390) {
+      await page.screenshot({ path: `${output}/sound-start-mobile.png` });
+      await scan(page, "blocked autoplay controls @ 390x844");
+    }
+    await start.press("Enter");
+    await waitForAudiblePlayback(page);
     await page.getByRole("button", { name: "Pausar vídeo" }).click();
     await page.getByRole("button", { name: "Reanudar vídeo" }).waitFor();
     const expected = height > width ? "ven-intro-portrait.mp4" : "ven-intro.mp4";
@@ -80,11 +100,13 @@ try {
     }
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: `${output}/intro-${width}.png` });
-    await scan(page, `autoplay controls @ ${width}x${height}`);
+    await scan(page, `playback controls @ ${width}x${height}`);
     const footer = await page.locator(".site-footer").evaluate(el => el.outerHTML);
     await page.getByRole("button", { name: "Saltar vídeo" }).focus();
     await page.keyboard.press("Tab");
     assert.equal(await page.evaluate(() => document.activeElement.classList.contains("intro-sound")), true);
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator("video").evaluate(v => v.muted), true);
     await page.keyboard.press("Enter");
     assert.equal(await page.locator("video").evaluate(v => v.muted), false);
     const fade = await page.evaluate(async () => {
@@ -107,14 +129,17 @@ try {
     await page.reload();
     await landingReady(page);
     assert.equal(requests.length, beforeReload, "A dismissed intro does not download again on reload");
-    report.checks.push(`Muted autoplay, matching orientation, compact controls, sound, fade, keyboard and form @ ${width}x${height}`);
+    report.checks.push(`Blocked autoplay waits for sound, matching orientation, compact controls, fade, keyboard and form @ ${width}x${height}`);
     await page.context().close();
   }
 
-  const playing = await pageFor();
+  autoplayBrowser = await chromium.launch({
+    ...browserOptions,
+    args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"],
+  });
+  const playing = await pageFor({}, { testBrowser: autoplayBrowser });
   await playing.goto(base);
-  await autoplay(playing);
-  await playing.getByRole("button", { name: "Activar sonido" }).click();
+  await waitForAudiblePlayback(playing);
   await playing.waitForFunction(() => document.querySelector("video")?.currentTime > 0.3);
   await playing.getByRole("button", { name: "Pausar vídeo" }).click();
   const media = await playing.locator("video").evaluate(v => ({
@@ -134,13 +159,22 @@ try {
   await playing.locator("#ven-intro").waitFor({ state: "detached", timeout: 20000 });
   await landingReady(playing);
   assert.equal(await playing.evaluate(() => document.activeElement.id), "main");
-  report.checks.push("Unmuted audio, pause/resume, captions and natural completion into the landing");
+  report.checks.push("Unmuted autoplay without interaction, pause/resume, captions and natural completion into the landing");
   report.media = media;
+
+  let replayRequests = 0;
+  playing.on("request", request => { if (mediaPath.test(request.url())) replayRequests++; });
+  await playing.goto(base + "/?intro=replay");
+  await landingReady(playing);
+  assert.equal(replayRequests, 0, "The old replay query does not reload a completed intro");
+  report.checks.push("The replay query does not reopen the intro after completion");
   await playing.context().close();
 
-  const escape = await pageFor({ viewport: { width: 390, height: 844 } });
+  const escape = await pageFor({ viewport: { width: 390, height: 844 }, hasTouch: true });
   await escape.goto(base);
-  await autoplay(escape);
+  const mobileStart = await soundStartButton(escape);
+  await mobileStart.tap();
+  await waitForAudiblePlayback(escape);
   await escape.locator("video").evaluate(v => (window.introTestVideo = v));
   await escape.screenshot({ path: `${output}/playing-mobile.png` });
   await escape.keyboard.press("Escape");
@@ -179,28 +213,19 @@ try {
   report.checks.push("Existing signup opens the offer directly");
   await returning.context().close();
 
-  const replay = await pageFor();
-  await replay.addInitScript(() => sessionStorage.setItem("ven-intro-seen-v2", "1"));
-  await replay.goto(base + "/?intro=replay");
-  await autoplay(replay);
-  await replay.getByRole("button", { name: "Saltar vídeo" }).click();
-  await landingReady(replay);
-  report.checks.push("Explicit replay link allows repeated preview review");
-  await replay.context().close();
-
   const privateMode = await pageFor();
   await privateMode.addInitScript(() => {
     Storage.prototype.getItem = () => { throw new DOMException("Blocked", "SecurityError"); };
     Storage.prototype.setItem = () => { throw new DOMException("Blocked", "SecurityError"); };
   });
   await privateMode.goto(base);
-  await autoplay(privateMode);
+  await soundStartButton(privateMode);
   await privateMode.getByRole("button", { name: "Saltar vídeo" }).click();
   await landingReady(privateMode);
   report.checks.push("Unavailable storage still permits the landing");
   await privateMode.context().close();
 
-  const missing = await pageFor({}, true);
+  const missing = await pageFor({}, { expectedMediaError: true });
   let failedRequests = 0;
   await missing.route(mediaPath, route => { failedRequests++; return route.fulfill({ status: 404, body: "" }); });
   await missing.goto(base);
@@ -210,35 +235,11 @@ try {
   report.checks.push("Missing media automatically falls back to the landing");
   await missing.context().close();
 
-  const blocked = await pageFor();
-  await blocked.addInitScript(() => {
-    const nativePlay = HTMLMediaElement.prototype.play;
-    let first = true;
-    HTMLMediaElement.prototype.play = function () {
-      if (first) {
-        first = false;
-        this.autoplay = false;
-        return Promise.reject(new DOMException("Blocked", "NotAllowedError"));
-      }
-      return nativePlay.call(this);
-    };
-  });
-  await blocked.goto(base);
-  await blocked.getByRole("button", { name: "Reproducir vídeo" }).waitFor();
-  await blocked.getByRole("button", { name: "Activar sonido" }).click();
-  await blocked.waitForFunction(() => {
-    const v = document.querySelector("video");
-    return v && !v.muted && !v.paused && v.currentTime > 0;
-  });
-  await blocked.getByRole("button", { name: "Saltar vídeo" }).click();
-  await landingReady(blocked);
-  report.checks.push("Autoplay-policy fallback recovers with one sound gesture and keeps skip available");
-  await blocked.context().close();
-
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.consoleErrors, []);
   writeFileSync(`${output}/report.json`, JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ checks: report.checks.length, accessibilityScans: report.accessibility.length, errors: report.errors, consoleErrors: report.consoleErrors, media: report.media }));
 } finally {
+  await autoplayBrowser?.close();
   await browser.close();
 }

@@ -78,7 +78,6 @@ html.intro-is-open {
   left: clamp(16px, 3vw, 48px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   pointer-events: none;
 }
@@ -88,6 +87,12 @@ html.intro-is-open {
   justify-content: center;
   gap: 8px;
   pointer-events: auto;
+}
+.intro-control[hidden] {
+  display: none;
+}
+.intro-playback {
+  margin-inline-start: auto;
 }
 .intro-control svg {
   flex: 0 0 18px;

@@ -7,12 +7,11 @@ const decorative = (svg) =>
 
 export function initIntro({ enabled = true } = {}) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const replay = new URLSearchParams(window.location.search).get("intro") === "replay";
   if (
     !enabled ||
     window.location.pathname !== "/" ||
     window.location.hash ||
-    (!replay && document.body.dataset.screen !== "entry") ||
+    document.body.dataset.screen !== "entry" ||
     reducedMotion.matches ||
     typeof HTMLDialogElement === "undefined" ||
     !HTMLDialogElement.prototype.showModal ||
@@ -21,7 +20,7 @@ export function initIntro({ enabled = true } = {}) {
     return;
 
   try {
-    if (!replay && sessionStorage.getItem(seenKey)) return;
+    if (sessionStorage.getItem(seenKey)) return;
   } catch {
     // Storage is optional.
   }
@@ -35,28 +34,26 @@ export function initIntro({ enabled = true } = {}) {
   dialog.setAttribute("aria-describedby", "intro-description");
   dialog.innerHTML = `
     <h2 class="intro-accessible" id="intro-title">Presentación de VOOM</h2>
-    <p class="intro-accessible" id="intro-description">Vídeo de 8 segundos con música y efectos de sonido. Empieza sin sonido; puedes activarlo, pausar o saltar la introducción.</p>
-    <video class="intro-video" autoplay muted playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
+    <p class="intro-accessible" id="intro-description">Vídeo de 8 segundos con música y efectos de sonido. Puedes silenciarlo, pausarlo o saltar la introducción.</p>
+    <video class="intro-video" playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
       <track kind="captions" src="/assets/ven-intro.es.vtt" srclang="es" label="Español (sonido)">
     </video>
     <img class="intro-logo" src="/assets/voom-logo.webp" alt="VOOM" width="158" height="54">
     <button class="intro-skip" type="button" aria-label="Saltar vídeo" autofocus>Saltar</button>
     <div class="intro-controls">
-      <button class="intro-control intro-sound" type="button"></button>
-      <button class="intro-control intro-playback" type="button"></button>
+      <button class="intro-control intro-sound" type="button" hidden></button>
+      <button class="intro-control intro-playback" type="button" hidden></button>
     </div>
     <p class="intro-accessible intro-status" role="status" aria-live="polite"></p>`;
 
   const video = dialog.querySelector("video");
   if (!video.canPlayType("video/mp4")) return;
-  video.muted = true;
   const sound = dialog.querySelector(".intro-sound");
   const playback = dialog.querySelector(".intro-playback");
   const status = dialog.querySelector(".intro-status");
   const events = new AbortController();
   const options = { signal: events.signal };
   let started = false;
-  let blocked = false;
   let leaving = false;
   let disposed = false;
   let exitTimer;
@@ -69,12 +66,11 @@ export function initIntro({ enabled = true } = {}) {
 
   function syncPlayback() {
     if (leaving || disposed) return;
-    const label = video.paused
-      ? started ? "Reanudar vídeo" : "Reproducir vídeo"
-      : "Pausar vídeo";
-    playback.innerHTML = decorative(video.paused ? Play : Pause) + (blocked ? "<span>Reproducir</span>" : "");
+    const label = !started ? "Reproducir con sonido" : video.paused ? "Reanudar vídeo" : "Pausar vídeo";
+    playback.innerHTML = decorative(video.paused ? Play : Pause) + (!started ? `<span>${label}</span>` : "");
     playback.setAttribute("aria-label", label);
     playback.title = label;
+    playback.hidden = false;
   }
 
   function cleanup() {
@@ -112,10 +108,15 @@ export function initIntro({ enabled = true } = {}) {
   async function resume() {
     try {
       await video.play();
-    } catch {
+    } catch (error) {
       if (leaving || disposed) return;
-      blocked = true;
-      status.textContent = "Pulsa Reproducir para iniciar el vídeo, o salta la introducción.";
+      if (error.name === "NotSupportedError") {
+        finish({ animate: false });
+        return;
+      }
+      status.textContent = started
+        ? "Pulsa Reanudar vídeo para continuar."
+        : "Para iniciar el vídeo, pulsa Reproducir con sonido. También puedes saltar la introducción.";
       syncPlayback();
     }
   }
@@ -123,7 +124,6 @@ export function initIntro({ enabled = true } = {}) {
   sound.addEventListener("click", () => {
     video.muted = !video.muted;
     syncSound();
-    if (!video.muted && video.paused && !started) void resume();
   }, options);
   playback.addEventListener("click", () => {
     if (video.paused) void resume();
@@ -131,7 +131,7 @@ export function initIntro({ enabled = true } = {}) {
   }, options);
   video.addEventListener("playing", () => {
     started = true;
-    blocked = false;
+    sound.hidden = false;
     status.textContent = "";
     syncPlayback();
   }, options);
@@ -149,7 +149,6 @@ export function initIntro({ enabled = true } = {}) {
   }, options);
   dialog.addEventListener("close", cleanup, options);
   syncSound();
-  syncPlayback();
   document.body.append(dialog);
   try {
     dialog.showModal();
