@@ -1,14 +1,19 @@
+import { Pause, Play, Volume2, VolumeX } from "lucide-static";
 import "./intro.css";
 
-const seenKey = "ven-intro-seen-v1";
+const seenKey = "ven-intro-seen-v2";
+const decorative = (svg) =>
+  svg.replace("<svg", '<svg aria-hidden="true" focusable="false"');
 
 export function initIntro({ enabled = true } = {}) {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const replay = new URLSearchParams(window.location.search).get("intro") === "replay";
   if (
     !enabled ||
     window.location.pathname !== "/" ||
     window.location.hash ||
-    document.body.dataset.screen !== "entry" ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    (!replay && document.body.dataset.screen !== "entry") ||
+    reducedMotion.matches ||
     typeof HTMLDialogElement === "undefined" ||
     !HTMLDialogElement.prototype.showModal ||
     document.querySelector("#ven-intro")
@@ -16,11 +21,13 @@ export function initIntro({ enabled = true } = {}) {
     return;
 
   try {
-    if (sessionStorage.getItem(seenKey)) return;
+    if (!replay && sessionStorage.getItem(seenKey)) return;
   } catch {
-    // The intro also works when browser storage is unavailable.
+    // Storage is optional.
   }
 
+  const portrait = window.matchMedia("(orientation: portrait)").matches;
+  const asset = portrait ? "ven-intro-portrait" : "ven-intro";
   const dialog = document.createElement("dialog");
   dialog.id = "ven-intro";
   dialog.className = "intro-dialog";
@@ -28,30 +35,52 @@ export function initIntro({ enabled = true } = {}) {
   dialog.setAttribute("aria-describedby", "intro-description");
   dialog.innerHTML = `
     <h2 class="intro-accessible" id="intro-title">Presentación de VOOM</h2>
-    <video class="intro-video" playsinline preload="none" poster="/assets/ven-intro-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
+    <p class="intro-accessible" id="intro-description">Vídeo de 8 segundos con música y efectos de sonido. Empieza sin sonido; puedes activarlo, pausar o saltar la introducción.</p>
+    <video class="intro-video" autoplay muted playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
       <track kind="captions" src="/assets/ven-intro.es.vtt" srclang="es" label="Español (sonido)">
     </video>
     <img class="intro-logo" src="/assets/voom-logo.webp" alt="VOOM" width="158" height="54">
-    <div class="intro-start">
-      <p class="intro-description" id="intro-description">8 segundos · Música y efectos de sonido</p>
-      <button class="button primary intro-play" type="button" autofocus>Reproducir con sonido</button>
-      <p class="intro-error" role="alert" hidden>No se ha podido reproducir el vídeo. Puedes volver a intentarlo o entrar sin vídeo.</p>
+    <button class="intro-skip" type="button" aria-label="Saltar vídeo" autofocus>Saltar</button>
+    <div class="intro-controls">
+      <button class="intro-control intro-sound" type="button"></button>
+      <button class="intro-control intro-playback" type="button"></button>
     </div>
-    <button class="intro-skip" type="button">Entrar sin vídeo</button>`;
+    <p class="intro-accessible intro-status" role="status" aria-live="polite"></p>`;
 
   const video = dialog.querySelector("video");
   if (!video.canPlayType("video/mp4")) return;
-
-  const play = dialog.querySelector(".intro-play");
-  const start = dialog.querySelector(".intro-start");
-  const error = dialog.querySelector(".intro-error");
+  video.muted = true;
+  const sound = dialog.querySelector(".intro-sound");
+  const playback = dialog.querySelector(".intro-playback");
+  const status = dialog.querySelector(".intro-status");
   const events = new AbortController();
   const options = { signal: events.signal };
-  let finished = false;
+  let started = false;
+  let blocked = false;
+  let leaving = false;
+  let disposed = false;
+  let exitTimer;
 
-  function finish() {
-    if (finished) return;
-    finished = true;
+  function syncSound() {
+    const label = video.muted ? "Activar sonido" : "Silenciar";
+    sound.innerHTML = `${decorative(video.muted ? VolumeX : Volume2)}<span>${label}</span>`;
+    sound.title = label;
+  }
+
+  function syncPlayback() {
+    if (leaving || disposed) return;
+    const label = video.paused
+      ? started ? "Reanudar vídeo" : "Reproducir vídeo"
+      : "Pausar vídeo";
+    playback.innerHTML = decorative(video.paused ? Play : Pause) + (blocked ? "<span>Reproducir</span>" : "");
+    playback.setAttribute("aria-label", label);
+    playback.title = label;
+  }
+
+  function cleanup() {
+    if (disposed) return;
+    disposed = true;
+    clearTimeout(exitTimer);
     events.abort();
     video.pause();
     video.removeAttribute("src");
@@ -62,55 +91,72 @@ export function initIntro({ enabled = true } = {}) {
     try {
       sessionStorage.setItem(seenKey, "1");
     } catch {
-      // Storage is optional; the landing must remain usable.
+      // The landing must remain usable when storage is blocked.
     }
     document.querySelector("#main")?.focus({ preventScroll: true });
   }
 
-  play.addEventListener(
-    "click",
-    async () => {
-      play.disabled = true;
-      play.textContent = "Cargando el vídeo…";
-      error.hidden = true;
-      video.controls = true;
-      video.tabIndex = 0;
-      video.muted = false;
-      video.preload = "auto";
-      // Fetch the full clip only after an explicit play gesture.
-      if (!video.getAttribute("src")) video.src = "/assets/ven-intro.mp4";
-      try {
-        await video.play();
-        if (!finished) video.focus({ preventScroll: true });
-      } catch {
-        if (finished) return;
-        play.disabled = false;
-        play.textContent = "Reproducir con sonido";
-        error.hidden = false;
-      }
-    },
-    options,
-  );
-  video.addEventListener("playing", () => (start.hidden = true), options);
-  video.addEventListener("ended", finish, options);
-  video.addEventListener("error", finish, options);
-  dialog.querySelector(".intro-skip").addEventListener("click", finish, options);
-  dialog.addEventListener(
-    "cancel",
-    (event) => {
-      event.preventDefault();
-      finish();
-    },
-    options,
-  );
-  dialog.addEventListener("close", finish, options);
+  function finish({ animate = true } = {}) {
+    if (leaving || disposed) return;
+    leaving = true;
+    video.pause();
+    if (!animate || reducedMotion.matches) {
+      cleanup();
+      return;
+    }
+    // Hold the final frame while the existing landing fades into view.
+    dialog.classList.add("intro-leaving");
+    exitTimer = setTimeout(cleanup, 750);
+  }
 
+  async function resume() {
+    try {
+      await video.play();
+    } catch {
+      if (leaving || disposed) return;
+      blocked = true;
+      status.textContent = "Pulsa Reproducir para iniciar el vídeo, o salta la introducción.";
+      syncPlayback();
+    }
+  }
+
+  sound.addEventListener("click", () => {
+    video.muted = !video.muted;
+    syncSound();
+    if (!video.muted && video.paused && !started) void resume();
+  }, options);
+  playback.addEventListener("click", () => {
+    if (video.paused) void resume();
+    else video.pause();
+  }, options);
+  video.addEventListener("playing", () => {
+    started = true;
+    blocked = false;
+    status.textContent = "";
+    syncPlayback();
+  }, options);
+  video.addEventListener("pause", syncPlayback, options);
+  video.addEventListener("volumechange", syncSound, options);
+  video.addEventListener("ended", () => finish(), options);
+  video.addEventListener("error", () => finish({ animate: false }), options);
+  dialog.querySelector(".intro-skip").addEventListener("click", () => finish(), options);
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    finish();
+  }, options);
+  dialog.addEventListener("transitionend", (event) => {
+    if (leaving && event.target === dialog && event.propertyName === "opacity") cleanup();
+  }, options);
+  dialog.addEventListener("close", cleanup, options);
+  syncSound();
+  syncPlayback();
   document.body.append(dialog);
   try {
     dialog.showModal();
     document.documentElement.classList.add("intro-is-open");
+    video.src = `/assets/${asset}.mp4`;
+    void resume();
   } catch {
-    events.abort();
-    dialog.remove();
+    cleanup();
   }
 }
