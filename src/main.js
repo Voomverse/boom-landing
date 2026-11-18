@@ -18,6 +18,7 @@ import { variants, privacyUrl, closingDate, closingLabel } from "./config.js";
 import "./style.css";
 import "./faq.css";
 import { renderEntry, renderArt } from "../shared/render-entry.js";
+import { initIntro } from "./intro.js";
 
 const main = document.querySelector("#experience");
 document.querySelector(".how-cta")?.addEventListener("click", (event) => {
@@ -225,3 +226,4 @@ try {
 }
 if (saved?.receipt && saved?.expiresAt > Date.now()) offer(saved);
 else entry();
+initIntro({ enabled: variantKey === "ven" });

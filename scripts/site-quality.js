@@ -103,6 +103,8 @@ try {
   for (const width of [1440, 390, 320]) {
     const context = await browser.newContext({
       viewport: { width, height: 1000 },
+      // Scan the landing states; the intro has separate accessibility checks.
+      reducedMotion: "reduce",
     });
     // These checks run locally; do not send synthetic visits to production analytics.
     await context.route("**/_vercel/insights/**", (route) =>

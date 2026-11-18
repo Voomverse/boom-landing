@@ -35,9 +35,11 @@ jobs:
         run: npm test
       - name: Build static site
         run: npm run build
-      - name: Install test browser
-        run: npx playwright install --with-deps chromium
+      - name: Install Chrome with H.264 and AAC playback support
+        run: npx playwright install --with-deps chrome
       - name: Check flows, search content and accessibility
+        env:
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
         shell: bash
         run: |
           set -euo pipefail
@@ -53,4 +55,5 @@ jobs:
           curl -fsS http://127.0.0.1:4173/ > /dev/null
           curl -fsS http://127.0.0.1:4176/ > /dev/null
           npm run test:browser
+          npm run test:intro
           npm run test:quality

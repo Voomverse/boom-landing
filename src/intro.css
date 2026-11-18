@@ -1,0 +1,136 @@
+html.intro-is-open {
+  overflow: hidden;
+}
+.intro-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  color: #fff;
+  opacity: 1;
+  transition: opacity 650ms ease-in-out;
+}
+.intro-dialog::backdrop {
+  background: transparent;
+}
+.intro-dialog.intro-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.intro-dialog .intro-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.intro-video {
+  --intro-source-ratio: calc(1920 / 824);
+  --intro-zoom-limit: 1.36;
+  position: absolute;
+  inset: 0;
+  margin-inline: auto;
+  width: 100%;
+  height: 100%;
+  /* Top-align the frame and cap the crop when the viewport is much taller or wider. */
+  max-width: calc(100dvh * var(--intro-source-ratio) * var(--intro-zoom-limit));
+  max-height: calc(100vw / var(--intro-source-ratio) * var(--intro-zoom-limit));
+  object-fit: cover;
+  object-position: center 60%;
+  background: #000;
+}
+.intro-video-portrait {
+  --intro-source-ratio: calc(720 / 1280);
+  --intro-zoom-limit: 1.25;
+  /* The portrait clip has extra headroom in the footage. */
+  transform: scale(1.08);
+  transform-origin: center bottom;
+}
+@media (max-width: 600px) and (max-aspect-ratio: 3/4) {
+  .intro-video-portrait {
+    transform: scale(1.22);
+  }
+}
+.intro-logo {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  left: clamp(16px, 3vw, 48px);
+  width: 110px;
+  height: auto;
+  pointer-events: none;
+}
+.intro-skip,
+.intro-control {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #000b;
+  color: #fff;
+  font-family: Jost, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+}
+.intro-skip {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: clamp(16px, 3vw, 48px);
+}
+.intro-controls {
+  position: absolute;
+  right: clamp(16px, 3vw, 48px);
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: clamp(16px, 3vw, 48px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+}
+.intro-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+.intro-control[hidden] {
+  display: none;
+}
+.intro-playback {
+  margin-inline-start: auto;
+}
+.intro-control svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.7;
+}
+.intro-skip:hover,
+.intro-control:hover {
+  background: #17131de6;
+}
+@media (max-width: 799px) {
+  .intro-logo {
+    top: max(20px, env(safe-area-inset-top));
+    width: 88px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-dialog {
+    transition: none;
+  }
+}

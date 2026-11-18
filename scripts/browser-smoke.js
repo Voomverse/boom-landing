@@ -46,6 +46,8 @@ try {
     const page = await browser.newPage({
       viewport: { width, height },
       deviceScaleFactor: 1,
+      // Exercise the landing flow; test:intro covers the optional video gate.
+      reducedMotion: "reduce",
     });
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);

@@ -13,6 +13,7 @@
     "test": "node --test tests/*.test.js",
     "export:signups": "node scripts/export-signups.js",
     "test:browser": "node scripts/browser-smoke.js",
+    "test:intro": "node scripts/intro-smoke.js",
     "test:quality": "node scripts/site-quality.js"
   },
   "dependencies": {
