@@ -1,5 +1,6 @@
 import { list, get } from "@vercel/blob";
 import { writeFile } from "node:fs/promises";
+import { utmKeys } from "../shared/utm.js";
 
 if (!process.env.BLOB_READ_WRITE_TOKEN)
   throw new Error(
@@ -47,6 +48,7 @@ const columns = [
   "country",
   "region",
   "city",
+  ...utmKeys,
 ];
 const rows = (await records("signups/"))
   .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
@@ -56,6 +58,7 @@ const rows = (await records("signups/"))
     country: record.location?.country || "",
     region: record.location?.region || "",
     city: record.location?.city || "",
+    ...Object.fromEntries(utmKeys.map((key) => [key, record.utm?.[key]])),
   }));
 const csv = [columns, ...rows.map((row) => columns.map((key) => row[key]))]
   .map((row) => row.map(cell).join(","))
