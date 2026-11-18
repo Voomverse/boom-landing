@@ -225,5 +225,5 @@ test("bundled VEN policy is the default when only private storage is configured"
   assert.equal(result.status, 201);
   const record = JSON.parse(saved[0][1]);
   assert.equal(record.privacyPolicyUrl, "/privacidad/");
-  assert.equal(record.privacyPolicyVersion, "ven-2026-11-18");
+  assert.equal(record.privacyPolicyVersion, "ven-2026-11-18.2");
 });
