@@ -58,6 +58,11 @@ html.intro-is-open {
   transform: scale(1.08);
   transform-origin: center bottom;
 }
+@media (max-width: 600px) and (max-aspect-ratio: 3/4) {
+  .intro-video-portrait {
+    transform: scale(1.22);
+  }
+}
 .intro-logo {
   position: absolute;
   top: max(20px, env(safe-area-inset-top));
