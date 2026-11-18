@@ -18,6 +18,7 @@ import { variants, privacyUrl, closingDate, closingLabel } from "./config.js";
 import "./style.css";
 import "./faq.css";
 import { renderEntry, renderArt } from "../shared/render-entry.js";
+import { normalizeUtm, utmKeys } from "../shared/utm.js";
 import { initIntro } from "./intro.js";
 
 const main = document.querySelector("#experience");
@@ -28,6 +29,9 @@ document.querySelector(".how-cta")?.addEventListener("click", (event) => {
   target.focus({ preventScroll: true });
 });
 const params = new URLSearchParams(location.search);
+const utm = normalizeUtm(
+  Object.fromEntries(utmKeys.map((key) => [key, params.get(key)])),
+);
 const path = location.pathname.replace(/^\/+|\/+$/g, "");
 const variantKey = Object.hasOwn(variants, params.get("variant"))
   ? params.get("variant")
@@ -119,6 +123,7 @@ function entry() {
         adult: true,
         consent: true,
         variant: variantKey,
+        utm,
         website: form.elements.website.value,
       });
       try {
@@ -226,4 +231,6 @@ try {
 }
 if (saved?.receipt && saved?.expiresAt > Date.now()) offer(saved);
 else entry();
-initIntro({ enabled: variantKey === "ven" });
+const isHome = path === "" && variantKey === "ven";
+const isTaggedCampaign = utm !== null && path !== "ven" && Object.hasOwn(variants, path);
+initIntro({ enabled: isHome || isTaggedCampaign });
