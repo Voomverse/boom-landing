@@ -38,7 +38,7 @@ export function initIntro({ enabled = true } = {}) {
     <video class="intro-video" playsinline preload="auto" poster="/assets/${asset}-poster.webp" aria-label="Presentación de VOOM, con música y efectos de sonido">
       <track kind="captions" src="/assets/ven-intro.es.vtt" srclang="es" label="Español (sonido)">
     </video>
-    <img class="intro-logo" src="/assets/voom-logo.webp" alt="VOOM" width="158" height="54">
+    <img class="intro-logo" src="/assets/voom-intro-logo.webp" alt="VOOM" width="330" height="101">
     <button class="intro-skip" type="button" aria-label="Saltar vídeo" autofocus>Saltar</button>
     <div class="intro-controls">
       <button class="intro-control intro-sound" type="button" hidden></button>
