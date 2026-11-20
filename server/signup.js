@@ -5,6 +5,7 @@ import {
   canonicalSignupExists,
   approximateLocation,
 } from "./signup-data.js";
+import { checkSignupEmailDomain } from "./email-domain.js";
 import { resolvePrivacyPolicyUrl } from "../shared/privacy.js";
 import { normalizeUtm } from "../shared/utm.js";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
@@ -47,7 +48,15 @@ async function bodyOf(req) {
 
 export async function handleSignup(
   req,
-  { env, put, get, list, now = Date.now, uuid = randomUUID },
+  {
+    env,
+    put,
+    get,
+    list,
+    now = Date.now,
+    uuid = randomUUID,
+    checkEmailDomain = checkSignupEmailDomain,
+  },
 ) {
   if (req.method !== "POST")
     return failure(405, "Método no permitido.", { Allow: "POST" });
@@ -101,6 +110,15 @@ export async function handleSignup(
       return failure(400, "Marca las dos casillas para seguir.");
     if (!variants.has(data.variant)) return failure(400, "Campaña no válida.");
     const email = normalizeEmail(data.email);
+    try {
+      if (!(await checkEmailDomain(email)))
+        return failure(400, "Usa un email con un dominio que reciba correo.");
+    } catch {
+      return failure(
+        503,
+        "No hemos podido verificar el dominio de tu email. Inténtalo de nuevo.",
+      );
+    }
     const storage = { get, list, token: env.BLOB_READ_WRITE_TOKEN };
     const duplicate = () =>
       failure(

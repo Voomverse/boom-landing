@@ -24,6 +24,7 @@ const request = (body) => ({ method: "POST", headers, body });
 const writes = [];
 const deps = {
   env,
+  checkEmailDomain: async () => true,
   get: async () => null,
   list: async () => ({ blobs: [], folders: [], hasMore: false }),
   put: async (...args) => writes.push(args),
@@ -51,7 +52,11 @@ test("signed receipt links plan selection to the saved signup", async () => {
   const { body } = await handleSignup(request(signup), deps);
   const result = await handleSignup(
     request({ action: "preference", receipt: body.receipt, plan: "ven" }),
-    deps,
+    {
+      ...deps,
+      checkEmailDomain: async () =>
+        assert.fail("Plan preferences do not need DNS"),
+    },
   );
   assert.equal(result.status, 201);
   assert.equal(
@@ -98,6 +103,46 @@ test("invalid input never reaches storage", async () => {
       400,
     );
   assert.equal(count, 0);
+});
+test("rejected or unverifiable email domains never reach signup storage", async () => {
+  for (const { verify, status, error } of [
+    {
+      verify: async () => false,
+      status: 400,
+      error: "Usa un email con un dominio que reciba correo.",
+    },
+    {
+      verify: async () => {
+        throw new Error("DNS temporarily unavailable");
+      },
+      status: 503,
+      error: "No hemos podido verificar el dominio de tu email. Inténtalo de nuevo.",
+    },
+  ]) {
+    const checked = [];
+    let storageCalls = 0;
+    const touchStorage = async () => {
+      storageCalls++;
+      throw new Error("Unexpected storage access");
+    };
+    const result = await handleSignup(
+      request({ ...signup, email: " FAN@EXAMPLE.COM " }),
+      {
+        ...deps,
+        checkEmailDomain: async (email) => {
+          checked.push(email);
+          return verify();
+        },
+        get: touchStorage,
+        list: touchStorage,
+        put: touchStorage,
+      },
+    );
+    assert.equal(result.status, status);
+    assert.deepEqual(result.body, { error });
+    assert.deepEqual(checked, ["fan@example.com"]);
+    assert.equal(storageCalls, 0);
+  }
 });
 test("private storage failure cannot return a success receipt", async () => {
   const result = await handleSignup(request(signup), {
