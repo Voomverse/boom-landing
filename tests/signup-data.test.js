@@ -5,6 +5,7 @@ import { approximateLocation, signupPath } from "../server/signup-data.js";
 import { memoryBlob } from "./helpers/memory-blob.js";
 
 const env = { BLOB_READ_WRITE_TOKEN: "test-only-secret" };
+const fixtureDeps = { env, checkEmailDomain: async () => true };
 const input = {
   action: "signup",
   email: "fan@example.com",
@@ -21,7 +22,7 @@ const request = (body = input, headers = {}) => ({
 
 test("repeat emails across case, whitespace and campaigns cannot overwrite signup or issue a receipt", async () => {
   const store = memoryBlob();
-  const deps = { env, ...store };
+  const deps = { ...fixtureDeps, ...store };
   assert.equal((await handleSignup(request(), deps)).status, 201);
   const original = [...store.records.values()][0];
   for (const variant of ["ven", "secreto", "antes-de-morir", "quanta"]) {
@@ -40,7 +41,9 @@ test("repeat emails across case, whitespace and campaigns cannot overwrite signu
 test("simultaneous submissions keep exactly one signup", async () => {
   const store = memoryBlob();
   const outcomes = await Promise.all(
-    Array.from({ length: 5 }, () => handleSignup(request(), { env, ...store })),
+    Array.from({ length: 5 }, () =>
+      handleSignup(request(), { ...fixtureDeps, ...store }),
+    ),
   );
   assert.equal(outcomes.filter((r) => r.status === 201).length, 1);
   assert.equal(outcomes.filter((r) => r.status === 409).length, 4);
@@ -58,7 +61,7 @@ test("existing dated signup folders are checked with pagination without deleting
     [signupPath("new-format@example.com")]: { email: "new-format@example.com" },
   };
   const store = memoryBlob(original, 1);
-  const result = await handleSignup(request(), { env, ...store });
+  const result = await handleSignup(request(), { ...fixtureDeps, ...store });
   assert.equal(result.status, 409);
   assert.equal(store.writes.length, 0);
   assert.equal(store.records.size, 4);
@@ -67,13 +70,16 @@ test("a different email can register alongside existing records", async () => {
   const store = memoryBlob({
     "signups/2026-11-15/a.json": { id: "old", email: "old@example.com" },
   });
-  assert.equal((await handleSignup(request(), { env, ...store })).status, 201);
+  assert.equal(
+    (await handleSignup(request(), { ...fixtureDeps, ...store })).status,
+    201,
+  );
   assert.equal(store.records.size, 2);
 });
 test("duplicate-read outages fail without writing; expired deadlines still reject first", async () => {
   let writes = 0;
   const deps = {
-    env,
+    ...fixtureDeps,
     get: async () => {
       throw new Error("Storage unavailable");
     },
@@ -97,7 +103,7 @@ test("legacy reads must succeed before accepting a new email", async () => {
     "signups/2026-11-15/a.json": { email: "old@example.com" },
   });
   const result = await handleSignup(request(), {
-    env,
+    ...fixtureDeps,
     ...store,
     get: async (path) => {
       if (path.startsWith("signups/by-email/")) return null;
@@ -117,7 +123,7 @@ test("Vercel country, region and encoded city are saved privately with the signu
       "x-forwarded-for": "192.0.2.1",
       "x-vercel-ip-latitude": "43.3",
     }),
-    { ...store, env: { ...env, VERCEL: "1" } },
+    { ...fixtureDeps, ...store, env: { ...env, VERCEL: "1" } },
   );
   assert.equal(result.status, 201);
   const record = JSON.parse(store.writes[0][1]);
@@ -139,7 +145,7 @@ test("missing location is allowed and arbitrary client location is ignored", asy
       { ...input, location: { city: "Fake" } },
       { "x-vercel-ip-city": "Fake" },
     ),
-    { env, ...store },
+    { ...fixtureDeps, ...store },
   );
   assert.equal(result.status, 201);
   assert.equal(JSON.parse(store.writes[0][1]).location, null);
@@ -159,7 +165,7 @@ test("optional signup attribution keeps only valid campaign labels in the privat
         extra: "ignore-me",
       },
     }),
-    { env, ...store },
+    { ...fixtureDeps, ...store },
   );
   assert.equal(result.status, 201);
   assert.equal(result.body.utm, undefined);
@@ -183,7 +189,7 @@ test("optional signup attribution keeps only valid campaign labels in the privat
   ].entries()) {
     const email = `other${index}@example.com`;
     const result = await handleSignup(request({ ...input, email, utm }), {
-      env,
+      ...fixtureDeps,
       ...store,
     });
     assert.equal(result.status, 201);

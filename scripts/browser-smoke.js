@@ -19,6 +19,11 @@ const env = {
   BLOB_READ_WRITE_TOKEN: "test-only-in-memory-token",
   VITE_PRIVACY_POLICY_URL: "https://example.com/privacy",
 };
+const signupDeps = {
+  env,
+  ...storage,
+  checkEmailDomain: async (email) => !email.endsWith("@no-mail.example"),
+};
 const errors = [];
 const results = [];
 const taggedSignup = {
@@ -98,7 +103,7 @@ try {
       .waitFor();
     assert.equal(await page.locator(".signup").isVisible(), true);
     results.push(`${device} validation + real unconfigured API error`);
-    // Exercise the real handler with an injected in-memory private storage adapter.
+    // Exercise the real handler with in-memory storage and a deterministic DNS check.
     await page.route("**/api/signup", async (route) => {
       const request = route.request();
       const result = await handleSignup(
@@ -111,10 +116,7 @@ try {
           },
           body: request.postData(),
         },
-        {
-          env,
-          ...storage,
-        },
+        signupDeps,
       );
       await route.fulfill({
         status: result.status,
@@ -122,6 +124,17 @@ try {
         body: JSON.stringify(result.body),
       });
     });
+    if (device === "desktop") {
+      await page.locator("#email").fill("browser-test@no-mail.example");
+      await page.getByRole("button", { name: "AVÍSAME PRIMERO" }).click();
+      await page
+        .getByRole("alert")
+        .filter({ hasText: "Usa un email con un dominio que reciba correo." })
+        .waitFor();
+      assert.equal(await page.locator(".signup").isVisible(), true);
+      await fill(page, device);
+      results.push("Unroutable email domain stays on the form for correction");
+    }
     await page.getByRole("button", { name: "AVÍSAME PRIMERO" }).click();
     await page.getByText("Hecho. Ya estás en VEN.").waitFor();
     await checked(page, `${device} offer`);
@@ -174,7 +187,7 @@ try {
           headers: { "content-type": "application/json" },
           body: route.request().postData(),
         },
-        { env, ...storage },
+        signupDeps,
       );
       await route.fulfill({
         status: result.status,
